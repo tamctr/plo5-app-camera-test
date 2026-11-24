@@ -228,36 +228,74 @@ header{position:sticky;top:0;z-index:5}
 .it{width:100%;border-collapse:collapse;font-size:13px;margin:4px 0;font-variant-numeric:tabular-nums}
 .it td,.it th{padding:4px 4px;border-bottom:1px solid #2f2f31;vertical-align:top;text-align:left}.it th{color:#999;font-weight:500;font-size:12px}
 .it td.n,.it th.n{text-align:right;white-space:nowrap}.it tr.hit td{background:rgba(76,217,100,.13);color:#fff}.it tr.dim td{color:#777}
-.it tr.gh td{color:#aaa;font-size:12px;padding-top:10px;border-bottom:1px solid #444}/* --- src/css/camera.css: camera button in the player row and the full-screen card scanner (live view, guide, chips, actions) */
+.it tr.gh td{color:#aaa;font-size:12px;padding-top:10px;border-bottom:1px solid #444}/* --- src/css/camera.css: camera button in the player row, the full-screen card scanner (view, guide, top bar, chips, actions), likely marks */
 .camb{flex:0 0 auto;background:#3a3a3c;border:1px solid #555;color:#fff;border-radius:6px;padding:4px 6px;cursor:pointer;display:flex;align-items:center;justify-content:center}
 .camb svg{width:20px;height:20px}.camb:active{background:#545456}
 .open-cam{overflow:hidden}
-.cam{position:fixed;inset:0;background:#000;z-index:30;overflow:hidden;color:#fff}
+.cam{position:fixed;inset:0;background:#000;z-index:30;overflow:hidden;color:#fff;user-select:none;-webkit-user-select:none}
 .cam[hidden]{display:none}
-.cam video,.cam #camI,.cam #camO{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
-.cam #camI{object-fit:contain;display:none}.cam.still #camI{display:block}.cam.still video{display:none}
-.cam #camO{pointer-events:none}
-.cam-top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;justify-content:space-between;padding:calc(env(safe-area-inset-top) + 10px) 14px 10px;background:linear-gradient(rgba(0,0,0,.7),rgba(0,0,0,0))}
-.cam-top b{font-size:17px}
-.cam-x{background:rgba(60,60,60,.8);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:24px;line-height:1;cursor:pointer}
-/* guide: where to hold the fanned cards; hint text under the box */
-.cam-guide{position:absolute;left:7%;right:7%;top:15%;height:40%;border:2px dashed rgba(255,255,255,.75);border-radius:14px;pointer-events:none;display:none}
-.cam.live:not(.err) .cam-guide{display:block}
-.cam-guide i{position:absolute;inset:-2px;border-radius:14px;box-shadow:0 0 0 2000px rgba(0,0,0,.25)}
+/* media is placed by camera-zoom.js (left/top/width/height, whole frame fitted between the bars) so zoom, zones and boxes share one mapping */
+.cam video,.cam #camPc{position:absolute;left:0;top:0;width:100%;height:100%;object-fit:fill}
+.cam #camPc{display:none}.cam.still #camPc{display:block}.cam.still video{display:none}
+.cam #camO{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.cam-touch,.cam-ze{position:absolute;inset:0;touch-action:none}
+.cam-ze[hidden]{display:none}
+.cam-top{position:absolute;left:0;right:0;top:0;display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 10px) 10px 10px;background:linear-gradient(rgba(0,0,0,.75),rgba(0,0,0,0))}
+.cam-who{flex:1;min-width:0;display:flex}.cam-who .seg.sw button{min-width:0;padding:0 9px;font-size:13px;height:32px}
+.cam-zc{font-size:14px;font-weight:700;padding:0 4px}
+.cam-tools{display:flex;gap:6px}
+.cam-ib{width:36px;height:36px;border-radius:50%;border:none;background:rgba(60,60,60,.8);color:#fff;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0}
+.cam-ib svg{width:19px;height:19px}.cam-ib.on{background:#ff9500;color:#000}.cam-ib.has{box-shadow:inset 0 0 0 2px #ff9500}
+.cam-x{flex:0 0 auto;background:rgba(60,60,60,.8);border:none;color:#fff;width:36px;height:36px;border-radius:50%;font-size:24px;line-height:1;cursor:pointer}
+.cam-x.sm{width:30px;height:30px;font-size:20px}
+/* zoom: right edge, + / level / - ; caption says optical or digital */
+.cam-zoom{position:absolute;right:8px;top:30%;display:flex;flex-direction:column;align-items:center;gap:6px;background:rgba(20,20,22,.6);border-radius:22px;padding:6px 4px}
+.cam-zoom button{width:36px;height:36px;border-radius:50%;border:none;background:rgba(80,80,84,.9);color:#fff;font-size:22px;font-weight:700;line-height:1;cursor:pointer}
+.cam-zoom b{font-size:13px;min-width:36px;text-align:center}
+.cam-zoom i{font-style:normal;font-size:9px;color:#bbb;text-transform:uppercase;letter-spacing:.3px}
+.cam.err .cam-zoom,.cam.zedit .cam-zoom{display:none}
+/* guide: where to hold the fanned cards (single-hand live mode only) */
+.cam-guide{position:absolute;border:2px dashed rgba(255,255,255,.75);border-radius:14px;pointer-events:none;display:none}
+.cam.live:not(.err):not(.zedit):not(.zones) .cam-guide{display:block}
+.cam-guide i{position:absolute;inset:-2px;border-radius:14px;box-shadow:0 0 0 2000px rgba(0,0,0,.2)}
 .cam-guide:after{content:attr(data-hint);position:absolute;left:0;right:0;top:calc(100% + 8px);text-align:center;font-size:14px;color:#fff;text-shadow:0 1px 3px #000}
-.cam-bot{position:absolute;left:0;right:0;bottom:0;background:rgba(18,18,20,.88);padding:10px 12px calc(env(safe-area-inset-bottom) + 12px);border-radius:16px 16px 0 0}
+.cam-bot{position:absolute;left:0;right:0;bottom:0;background:rgba(18,18,20,.9);padding:10px 12px calc(env(safe-area-inset-bottom) + 12px);border-radius:16px 16px 0 0;max-height:62%;overflow:auto}
 .cam-stat{font-size:14px;color:#ddd;text-align:center;min-height:20px;margin-bottom:8px}
 .cam-stat.ok{color:#32d74b}.cam-stat.warn{color:#ffb340}.cam-stat.bad{color:#ff6961}
-.cam-chips{display:flex;justify-content:center;gap:8px;margin-bottom:10px}
+.cam-grp{margin-bottom:8px}.cam-grp.multi{display:flex;align-items:center;gap:6px;margin-bottom:6px}
+.cam-gl{flex:0 0 54px;font-size:13px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.cam-chips{display:flex;justify-content:center;gap:8px}
+.cam-grp.multi .cam-chips{gap:5px;justify-content:flex-start}
 .cam-chip{position:relative;flex:0 0 auto;width:58px;padding:2px;background:none;border:2px solid transparent;border-radius:9px;cursor:pointer}
+.cam-grp.multi .cam-chip{width:46px}
 .cam-chip .cd{width:100%;position:relative;aspect-ratio:5/7;border-radius:6px}
-.cam-chip.empty{opacity:.35}
+.cam-chip.empty{opacity:.35}.cam-chip.pre{opacity:.75}
 .cam-chip.unsure{border:2px dashed #ff9500}
-.cam-chip.clash{border:2px solid #ff453a}
 .cam-chip em{position:absolute;top:-8px;right:-8px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:#ff9500;color:#000;font-style:normal;font-weight:800;font-size:13px;line-height:20px}
-.cam-chip.clash em{background:#ff453a;color:#fff;font-size:10px;right:auto;left:50%;transform:translateX(-50%);top:auto;bottom:-9px;white-space:nowrap}
-.cam-acts{display:flex;gap:8px}.cam-acts .btn{flex:1;font-size:16px}
-.cam-acts .btn:disabled{opacity:.35}
+.cam-acts{display:flex;gap:6px}.cam-acts .btn{flex:1;font-size:14px;line-height:1.1;height:44px;padding:0 4px}
+.cam-acts .btn:disabled{opacity:.35}.cam-acts.sm .btn{height:38px;font-size:14px}
+/* alternatives popover for a tapped chip */
+.cam-pop{background:#2c2c2e;border-radius:12px;padding:8px 10px;margin:0 0 10px}
+.cam-pt{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px}.cam-pt b{font-size:15px}
+.cam-alts{display:flex;gap:8px;justify-content:center;margin-bottom:8px;min-height:40px;align-items:center}
+.cam-note{font-size:12px;color:#aaa;line-height:1.35;margin:2px 0 8px}
+/* settings panel */
+.cam-set{position:absolute;left:10px;right:10px;top:calc(env(safe-area-inset-top) + 58px);background:rgba(28,28,30,.97);border-radius:14px;padding:10px 12px;z-index:2;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+.cam-set[hidden]{display:none}
+.cam-tg{display:flex;align-items:center;justify-content:space-between;gap:10px;margin:8px 0;font-size:14px}
+.cam-tg.col{flex-direction:column;align-items:stretch}.cam-tg input[type=range]{width:100%;accent-color:#ff9500}
+.cam-na{font-style:normal;color:#888;font-size:12px}
+/* zone editor panel */
+.cam-bot.zed .cam-zrow{display:flex;gap:8px;align-items:center;margin-bottom:8px}
+.cam-zrow input{flex:1;min-width:0;height:38px;border-radius:8px;border:1px solid #555;background:#1c1c1e;color:#fff;font-size:16px;padding:0 10px}
+.cam-zrow .seg{flex:1}.cam-zrow .seg.sw button{flex:1}
+.cam-zrow.cols{justify-content:space-between}
+.cam-col{width:34px;height:34px;border-radius:50%;border:2px solid transparent;cursor:pointer}.cam-col.on{border-color:#fff;box-shadow:0 0 0 2px #000 inset}
+.cam-mini{height:38px;border-radius:8px;border:none;background:#3a3a3c;color:#fff;font-size:14px;padding:0 12px;cursor:pointer}.cam-mini.del{color:#ff6961}
+/* "likely" (camera suggestion) on the main-page cards */
+.cd.likely{outline:2px dashed #ff9500;outline-offset:1px}
+.cd.likely:after{content:"?";position:absolute;top:3px;right:3px;width:18px;height:18px;border-radius:9px;background:#ff9500;color:#000;font-weight:800;font-size:12px;line-height:18px;text-align:center;z-index:1}
+body.cam-drag:after{content:"";position:fixed;inset:6px;border:3px dashed #ff9500;border-radius:16px;pointer-events:none;z-index:40}
 
 </style></head><body>
 <header><button type="button" class="logo" id="menuBtn" aria-haspopup="true" aria-expanded="false" aria-label="Menu" data-i18n-aria="menu.open">%</button>
@@ -1762,21 +1800,71 @@ var I18N_EN={
  "cam.starting":"Starting camera…",
  "cam.hint":"Fan the 5 cards inside the box, corners showing, 30–40 cm away",
  "cam.scan":"Looking for cards… {n}/5 found",
- "cam.check":"Check the cards. Tap one to fix it.",
- "cam.unsure":"{n} unsure (?)",
- "cam.clash":"{n} already used by the other player",
- "cam.retry":"Retry",
- "cam.photo":"Photo",
- "cam.use":"Use hand",
- "cam.err.https":"The live camera needs a secure (https) page. Take a photo instead.",
- "cam.err.denied":"Camera access is blocked. Allow it in Settings › Safari › Camera, or take a photo instead.",
- "cam.err.none":"No camera available. Take a photo instead.",
- "cam.err.model":"Couldn't load the card reader. Check your connection and tap Retry.",
+ "cam.err.https":"The live camera needs a secure (https) page. Use Load photo instead.",
+ "cam.err.denied":"Camera access is blocked. Allow it in Settings › Safari › Camera, or use Load photo.",
+ "cam.err.none":"No camera available. Use Load photo instead.",
+ "cam.err.model":"Couldn't load the card reader. Check your connection, then close and reopen the camera.",
  "cam.photo.read":"Reading the photo…",
  "cam.photo.none":"No cards found. Try again with the corners in view.",
- "cam.inuse":"in use",
  "cam.chip.aria":"{card}, tap to fix",
  "cam.slot.aria":"Empty slot, tap to pick a card",
+ "cam.scan.z":"Looking for cards in {z} zones… {n} found",
+ "cam.filled":"{who} filled ✓",
+ "cam.filled.likely":"{n} likely (?) – tap to check",
+ "cam.filled.miss":"{n} not seen – tap the empty slot to pick",
+ "cam.none":"No cards found yet. Hold the corners in view.",
+ "cam.watch":"watching for a new hand",
+ "cam.frozen":"Paused. Tap ▶ to resume.",
+ "cam.photo.n":"Reading photo {i} of {n}…",
+ "cam.photo.bad":"Couldn't open that photo. Try a JPEG or PNG.",
+ "cam.undo":"Undo",
+ "cam.undone":"Undone",
+ "cam.load":"Load photo",
+ "cam.rescan":"Rescan",
+ "cam.live":"Live camera",
+ "cam.done":"Done",
+ "cam.who":"Fill which player",
+ "cam.likely.aria":"{card}, likely – tap to check",
+ "cam.pop.likely":"Likely {card}. Is it one of these?",
+ "cam.pop.title":"{card}. Change it to:",
+ "cam.pop.none":"No other close matches were seen.",
+ "cam.pop.keep":"It's right",
+ "cam.pop.rm":"Remove",
+ "cam.pop.pick":"Pick…",
+ "cam.torch":"Torch",
+ "cam.freeze":"Pause or resume",
+ "cam.zones":"Zones",
+ "cam.set":"Camera settings",
+ "cam.zoom.in":"Zoom in",
+ "cam.zoom.out":"Zoom out",
+ "cam.zoom.hw":"optical",
+ "cam.zoom.dg":"digital",
+ "cam.set.title":"Camera settings",
+ "cam.set.sure":"Mark as likely (?) below {n}% confidence",
+ "cam.set.sure.note":"Higher marks more cards with ?, so you check more of them. Cards are always filled either way.",
+ "cam.set.snd":"Beep when a hand locks",
+ "cam.set.auto":"Auto-rescan when the cards change",
+ "cam.set.awake":"Keep the screen awake",
+ "cam.set.na":"(not supported here)",
+ "cam.dev.zoomhw":"This camera has optical/hardware zoom up to {max}×.",
+ "cam.dev.zoomdg":"No hardware zoom here, so zoom crops the picture (digital).",
+ "cam.dev.torch":"Torch available.",
+ "cam.dev.notorch":"This camera doesn't offer torch control.",
+ "cam.dev.photo":"Photo mode: zoom crops the photo and reads it again.",
+ "cam.zone.n":"Zone {n}",
+ "cam.zone.p":"P{n}",
+ "cam.zone.other":"Other",
+ "cam.zone.title":"Zones {n}/{max}",
+ "cam.zone.hint":"Drag on the picture to draw a zone where a player's cards sit. Tap a zone to rename, recolour or reassign it.",
+ "cam.zone.full":"7 zones is the maximum. Tap a zone to edit or delete it.",
+ "cam.zone.name":"Zone name",
+ "cam.zone.del":"Delete",
+ "cam.zone.who":"Cards go to",
+ "cam.zone.col":"Colour {n}",
+ "cam.zone.other.note":"Other: cards here are read and shown, and are kept out of Player 1 and 2 as duplicates, but are not loaded (the app compares two hands).",
+ "cam.zone.clear":"Clear all",
+ "cam.zone.done":"Done",
+ "cam.photo.next":"next photo fills Player {n}",
 };
 /* --- src/i18n/zh.js.js
  * Owns: Simplified Chinese string table (I18N_ZH). Keys must match en.js / zh.js / ko.js. Generated from the i18n catalog; edit the catalog and re-emit, or edit all three together.
@@ -2548,21 +2636,71 @@ var I18N_ZH={
  "cam.starting":"正在打开相机…",
  "cam.hint":"将 5 张牌扇形摊开放在框内，露出牌角，距离 30–40 厘米",
  "cam.scan":"正在识别… 已识别 {n}/5",
- "cam.check":"请核对手牌，点一张牌可更正。",
- "cam.unsure":"{n} 张不确定（?）",
- "cam.clash":"{n} 张已被另一位玩家使用",
- "cam.retry":"重试",
- "cam.photo":"拍照",
- "cam.use":"使用这手牌",
- "cam.err.https":"实时相机需要安全（https）页面，请改用拍照。",
- "cam.err.denied":"相机权限被拒绝。请在“设置 › Safari › 相机”中允许，或改用拍照。",
- "cam.err.none":"没有可用的相机，请改用拍照。",
- "cam.err.model":"无法加载识牌模型。请检查网络后点重试。",
+ "cam.err.https":"实时相机需要安全（https）页面，请改用“载入照片”。",
+ "cam.err.denied":"相机权限被拒绝。请在“设置 › Safari › 相机”中允许，或改用“载入照片”。",
+ "cam.err.none":"没有可用的相机，请改用“载入照片”。",
+ "cam.err.model":"无法加载识牌模型。请检查网络，然后关闭并重新打开相机。",
  "cam.photo.read":"正在识别照片…",
  "cam.photo.none":"没有识别到牌。请让牌角入镜后再试。",
- "cam.inuse":"已用",
  "cam.chip.aria":"{card}，点按更正",
  "cam.slot.aria":"空位，点按选牌",
+ "cam.scan.z":"正在 {z} 个区域中识别… 已识别 {n} 张",
+ "cam.filled":"{who} 已填入 ✓",
+ "cam.filled.likely":"{n} 张为推测（?），点按核对",
+ "cam.filled.miss":"{n} 张未识别，点空位选牌",
+ "cam.none":"尚未识别到牌，请让牌角入镜。",
+ "cam.watch":"正在等待新的一手牌",
+ "cam.frozen":"已暂停，点 ▶ 继续。",
+ "cam.photo.n":"正在识别第 {i}/{n} 张照片…",
+ "cam.photo.bad":"无法打开这张照片，请改用 JPEG 或 PNG。",
+ "cam.undo":"撤销",
+ "cam.undone":"已撤销",
+ "cam.load":"载入照片",
+ "cam.rescan":"重新扫描",
+ "cam.live":"实时相机",
+ "cam.done":"完成",
+ "cam.who":"填入哪位玩家",
+ "cam.likely.aria":"{card}，推测 – 点按核对",
+ "cam.pop.likely":"推测为 {card}。是下面哪一张吗？",
+ "cam.pop.title":"{card}。改成：",
+ "cam.pop.none":"没有看到其他相近的牌。",
+ "cam.pop.keep":"没错",
+ "cam.pop.rm":"移除",
+ "cam.pop.pick":"选牌…",
+ "cam.torch":"手电筒",
+ "cam.freeze":"暂停或继续",
+ "cam.zones":"区域",
+ "cam.set":"相机设置",
+ "cam.zoom.in":"放大",
+ "cam.zoom.out":"缩小",
+ "cam.zoom.hw":"光学",
+ "cam.zoom.dg":"数码",
+ "cam.set.title":"相机设置",
+ "cam.set.sure":"置信度低于 {n}% 时标为推测（?）",
+ "cam.set.sure.note":"调高会给更多牌加 ?，需要核对的更多。无论如何牌都会自动填入。",
+ "cam.set.snd":"锁定一手牌时提示音",
+ "cam.set.auto":"牌变了自动重新扫描",
+ "cam.set.awake":"保持屏幕常亮",
+ "cam.set.na":"（此设备不支持）",
+ "cam.dev.zoomhw":"此相机支持硬件变焦，最高 {max}×。",
+ "cam.dev.zoomdg":"此相机不支持硬件变焦，缩放为裁剪画面（数码）。",
+ "cam.dev.torch":"可以使用手电筒。",
+ "cam.dev.notorch":"此相机不提供手电筒控制。",
+ "cam.dev.photo":"照片模式：缩放会裁剪照片并重新识别。",
+ "cam.zone.n":"区域 {n}",
+ "cam.zone.p":"P{n}",
+ "cam.zone.other":"其他",
+ "cam.zone.title":"区域 {n}/{max}",
+ "cam.zone.hint":"在画面上拖动，框出某位玩家的牌所在区域。点按区域可改名、换颜色或改分配。",
+ "cam.zone.full":"最多 7 个区域。点按区域可编辑或删除。",
+ "cam.zone.name":"区域名称",
+ "cam.zone.del":"删除",
+ "cam.zone.who":"牌填入",
+ "cam.zone.col":"颜色 {n}",
+ "cam.zone.other.note":"其他：此区域的牌会被识别和显示，并防止与玩家 1、2 重复，但不会载入（应用只比较两手牌）。",
+ "cam.zone.clear":"全部清除",
+ "cam.zone.done":"完成",
+ "cam.photo.next":"下一张照片填入玩家 {n}",
 };
 /* --- src/i18n/ko.js.js
  * Owns: Korean string table (I18N_KO). Keys must match en.js / zh.js / ko.js. Generated from the i18n catalog; edit the catalog and re-emit, or edit all three together.
@@ -3334,21 +3472,71 @@ var I18N_KO={
  "cam.starting":"카메라 켜는 중…",
  "cam.hint":"카드 5장을 부채꼴로 펼쳐 모서리가 보이게 박스 안에, 30–40cm 거리",
  "cam.scan":"카드 찾는 중… {n}/5 인식",
- "cam.check":"카드를 확인하세요. 탭하면 수정할 수 있어요.",
- "cam.unsure":"{n}장 불확실(?)",
- "cam.clash":"{n}장은 상대 플레이어가 사용 중",
- "cam.retry":"다시",
- "cam.photo":"사진",
- "cam.use":"이 핸드 사용",
- "cam.err.https":"실시간 카메라는 보안(https) 페이지에서만 됩니다. 대신 사진을 찍어 주세요.",
- "cam.err.denied":"카메라 권한이 차단됐어요. 설정 › Safari › 카메라에서 허용하거나 사진을 찍어 주세요.",
- "cam.err.none":"사용할 수 있는 카메라가 없어요. 사진을 찍어 주세요.",
- "cam.err.model":"카드 인식기를 불러오지 못했어요. 연결을 확인하고 다시를 눌러 주세요.",
+ "cam.err.https":"실시간 카메라는 보안(https) 페이지에서만 됩니다. 대신 '사진 불러오기'를 사용하세요.",
+ "cam.err.denied":"카메라 권한이 차단됐어요. 설정 › Safari › 카메라에서 허용하거나 '사진 불러오기'를 사용하세요.",
+ "cam.err.none":"사용할 수 있는 카메라가 없어요. '사진 불러오기'를 사용하세요.",
+ "cam.err.model":"카드 인식기를 불러오지 못했어요. 연결을 확인한 뒤 카메라를 닫았다가 다시 여세요.",
  "cam.photo.read":"사진 읽는 중…",
  "cam.photo.none":"카드를 찾지 못했어요. 모서리가 보이게 다시 찍어 주세요.",
- "cam.inuse":"사용 중",
  "cam.chip.aria":"{card}, 탭하여 수정",
  "cam.slot.aria":"빈 칸, 탭하여 카드 선택",
+ "cam.scan.z":"{z}개 구역에서 카드 찾는 중… {n}장 인식",
+ "cam.filled":"{who} 채움 ✓",
+ "cam.filled.likely":"{n}장 추정(?) – 탭하여 확인",
+ "cam.filled.miss":"{n}장 못 봄 – 빈 칸을 탭해 선택",
+ "cam.none":"아직 카드를 찾지 못했어요. 모서리가 보이게 해 주세요.",
+ "cam.watch":"새 핸드 대기 중",
+ "cam.frozen":"일시정지됨. ▶를 눌러 계속.",
+ "cam.photo.n":"사진 {i}/{n} 읽는 중…",
+ "cam.photo.bad":"사진을 열 수 없어요. JPEG나 PNG로 시도해 주세요.",
+ "cam.undo":"실행 취소",
+ "cam.undone":"취소됨",
+ "cam.load":"사진 불러오기",
+ "cam.rescan":"다시 스캔",
+ "cam.live":"실시간 카메라",
+ "cam.done":"완료",
+ "cam.who":"채울 플레이어",
+ "cam.likely.aria":"{card}, 추정 – 탭하여 확인",
+ "cam.pop.likely":"{card}(추정). 혹시 이 중 하나인가요?",
+ "cam.pop.title":"{card}. 다음으로 바꾸기:",
+ "cam.pop.none":"비슷한 다른 후보가 없었어요.",
+ "cam.pop.keep":"맞아요",
+ "cam.pop.rm":"빼기",
+ "cam.pop.pick":"직접 선택…",
+ "cam.torch":"플래시",
+ "cam.freeze":"일시정지 / 계속",
+ "cam.zones":"구역",
+ "cam.set":"카메라 설정",
+ "cam.zoom.in":"확대",
+ "cam.zoom.out":"축소",
+ "cam.zoom.hw":"광학",
+ "cam.zoom.dg":"디지털",
+ "cam.set.title":"카메라 설정",
+ "cam.set.sure":"신뢰도 {n}% 미만이면 추정(?) 표시",
+ "cam.set.sure.note":"높이면 ? 표시가 늘어 더 많이 확인하게 돼요. 어느 쪽이든 카드는 자동으로 채워져요.",
+ "cam.set.snd":"핸드가 확정되면 알림음",
+ "cam.set.auto":"카드가 바뀌면 자동 다시 스캔",
+ "cam.set.awake":"화면 켜짐 유지",
+ "cam.set.na":"(이 기기에서 미지원)",
+ "cam.dev.zoomhw":"이 카메라는 최대 {max}× 하드웨어 줌을 지원해요.",
+ "cam.dev.zoomdg":"하드웨어 줌이 없어 화면을 잘라서 확대해요(디지털).",
+ "cam.dev.torch":"플래시를 쓸 수 있어요.",
+ "cam.dev.notorch":"이 카메라는 플래시 제어를 지원하지 않아요.",
+ "cam.dev.photo":"사진 모드: 확대하면 사진을 잘라 다시 읽어요.",
+ "cam.zone.n":"구역 {n}",
+ "cam.zone.p":"P{n}",
+ "cam.zone.other":"기타",
+ "cam.zone.title":"구역 {n}/{max}",
+ "cam.zone.hint":"화면을 드래그해 플레이어 카드가 놓이는 구역을 그리세요. 구역을 탭하면 이름·색·배정을 바꿀 수 있어요.",
+ "cam.zone.full":"구역은 최대 7개예요. 구역을 탭해 수정하거나 삭제하세요.",
+ "cam.zone.name":"구역 이름",
+ "cam.zone.del":"삭제",
+ "cam.zone.who":"카드 배정",
+ "cam.zone.col":"색 {n}",
+ "cam.zone.other.note":"기타: 이 구역 카드는 읽어서 보여 주고 플레이어 1·2와 중복되지 않게 막지만, 불러오지는 않아요(앱은 두 핸드를 비교해요).",
+ "cam.zone.clear":"모두 지우기",
+ "cam.zone.done":"완료",
+ "cam.photo.next":"다음 사진은 플레이어 {n}에 채움",
 };
 /* --- src/ui/i18n.js
  * Owns: Language state, tr() helper, static-shell fill, and applyLang() (re-render with no reload).
@@ -3539,12 +3727,12 @@ function f(x){return x==null||isNaN(x)?'–':(x*100).toFixed(2);}
 function sheetOpen(){return document.body.classList.contains('open-sheet');}
 /* --- src/ui/layout.js
  * Owns: Rebuilds the two player rows (header, slider, cards, body placeholder) and calls paint().
- * Depends on: ui/cards.js, ui/slider.js, ui/state.js, ui/camera.js (camBtn), ui/paint.js (paint is hoisted).
+ * Depends on: ui/cards.js, ui/slider.js, ui/state.js, ui/camera.js (camBtn), ui/camera-extras.js (camLk likely marks), ui/paint.js (paint is hoisted).
  */
 function build(){
  var s='';
  for(var p=0;p<2;p++){var hd=hands[p],cs='';
-  for(var i=0;i<5;i++){var t=sheetOpen()&&p===act&&i===tgt?' tgt':'';cs+=hd[i]!=null?face(hd[i],t).replace('class="cd','data-p="'+p+'" data-i="'+i+'" class="cd'):back(t).replace('class="cd','data-p="'+p+'" data-i="'+i+'" class="cd');}
+  for(var i=0;i<5;i++){var t=sheetOpen()&&p===act&&i===tgt?' tgt':'';cs+=hd[i]!=null?face(hd[i],t+camLk(p,hd[i])).replace('class="cd','data-p="'+p+'" data-i="'+i+'" class="cd'):back(t).replace('class="cd','data-p="'+p+'" data-i="'+i+'" class="cd');}
   s+='<section class="pl'+(open[p]?' open':'')+'" id="pl'+p+'"><div class="pt"><h2>'+(randMode()>=0&&randMode()!==p?(nr>1?tr('player.randoms',{n:nr}):tr('player.random')):tr('player',{n:p+1}))+'</h2>'+slHtml(p)+
    '<button class="rndb" data-rndp="'+p+'">'+tr('btn.rnd')+'</button>'+camBtn(p)+'<button class="clr" data-clr="'+p+'"'+(hd.length?'':' disabled')+'>'+tr('btn.clear')+'</button></div><div class="slm" id="slm'+p+'"></div>'+
    '<div class="cards">'+cs+'</div><div id="body'+p+'"></div></section>';}
@@ -3962,8 +4150,10 @@ i18nFill();
 smUpdate();
 build();/* --- src/ui/camera-detect.js
  * Owns: On-device playing-card detection helpers for the camera: model class names, frame letterboxing
- *       into the 640x640 model input, YOLOv8 output decoding + per-class NMS, and the multi-frame vote that
- *       locks a card only after it is seen in several recent frames (max 5 unique cards).
+ *       into the 640x640 model input (optionally from a crop of the source), YOLOv8 output decoding + per-class NMS
+ *       (each box also keeps its runner-up classes), the multi-frame vote that locks a card only after it is seen in
+ *       several recent frames (max 5 unique cards), "likely" suggestions for cards that never locked, the still-photo
+ *       vote, and the cross-hand duplicate guard.
  * Depends on: core cards.js (RANKS). The model (cam/cards.onnx) and onnxruntime-web (cam/ort.wasm.min.js)
  *       are loaded lazily by ui/camera.js; nothing here runs until the camera opens.
  *       Pure functions; /workspace/plo5-cam/harness.html reuses this file for the accuracy test.
@@ -3973,67 +4163,352 @@ var CAM_SZ=640,
 // model class index -> app card id (rank*4 + suit, suits in SUITS order s h d c)
 function camCardId(k){var n=CAM_NAMES[k],r=n.slice(0,-1);return RANKS.indexOf(r==='10'?'T':r)*4+'SHDC'.indexOf(n.slice(-1));}
 // Draw source (video / image / canvas, size sw x sh) into the 640 canvas, letterboxed. zoom<1 shrinks the
-// picture inside the frame so close-up cards look the size the model was trained on. Returns the CHW float tensor data.
-function camPrep(cx,src,sw,sh,zoom){
- var s=Math.min(CAM_SZ/sw,CAM_SZ/sh)*(zoom||1),w=Math.round(sw*s),h=Math.round(sh*s),ox=(CAM_SZ-w)>>1,oy=(CAM_SZ-h)>>1;
- cx.fillStyle='rgb(114,114,114)';cx.fillRect(0,0,CAM_SZ,CAM_SZ);cx.drawImage(src,0,0,sw,sh,ox,oy,w,h);
+// picture inside the frame so close-up cards look the size the model was trained on. crop {x,y,w,h} (source px) feeds
+// only that part of the source (digital zoom). Returns the CHW float tensor data and the mapping back to source px.
+function camPrep(cx,src,sw,sh,zoom,crop){
+ var c=crop||{x:0,y:0,w:sw,h:sh},s=Math.min(CAM_SZ/c.w,CAM_SZ/c.h)*(zoom||1),w=Math.round(c.w*s),h=Math.round(c.h*s),ox=(CAM_SZ-w)>>1,oy=(CAM_SZ-h)>>1;
+ cx.imageSmoothingEnabled=true;cx.imageSmoothingQuality=src.videoWidth?'low':'high'; // photos: high-quality downscale (canvas sources resample worse at 'low')
+ cx.fillStyle='rgb(114,114,114)';cx.fillRect(0,0,CAM_SZ,CAM_SZ);cx.drawImage(src,c.x,c.y,c.w,c.h,ox,oy,w,h);
  var d=cx.getImageData(0,0,CAM_SZ,CAM_SZ).data,N=CAM_SZ*CAM_SZ,t=new Float32Array(3*N);
  for(var i=0,j=0;i<N;i++,j+=4){t[i]=d[j]/255;t[i+N]=d[j+1]/255;t[i+2*N]=d[j+2]/255;}
- return {data:t,s:s,ox:ox,oy:oy};
+ return {data:t,s:s,ox:ox,oy:oy,cx:c.x,cy:c.y};
 }
 function camIou(a,b){var x1=Math.max(a.x1,b.x1),y1=Math.max(a.y1,b.y1),x2=Math.min(a.x2,b.x2),y2=Math.min(a.y2,b.y2),i=Math.max(0,x2-x1)*Math.max(0,y2-y1);
  return i/((a.x2-a.x1)*(a.y2-a.y1)+(b.x2-b.x1)*(b.y2-b.y1)-i+1e-9);}
 // out: Float32Array [4+52, A] (cx,cy,w,h then class scores). Boxes come back in source-image pixels.
+// Each kept box carries alt: up to 3 runner-up classes at the same anchor ({k,p}, p >= 0.03) for one-tap fixes.
 function camDecode(out,A,thr,m){
  var C=CAM_NAMES.length,c=[],i,k;
- for(i=0;i<A;i++){var bk=-1,bp=thr;for(k=0;k<C;k++){var p=out[(4+k)*A+i];if(p>bp){bp=p;bk=k;}}
-  if(bk<0)continue;var x=out[i],y=out[A+i],w=out[2*A+i],h=out[3*A+i];
-  c.push({k:bk,p:bp,x1:(x-w/2-m.ox)/m.s,y1:(y-h/2-m.oy)/m.s,x2:(x+w/2-m.ox)/m.s,y2:(y+h/2-m.oy)/m.s});}
+ for(i=0;i<A;i++){var b=[-1,-1,-1,-1],bp=[0,0,0,0];
+  for(k=0;k<C;k++){var p=out[(4+k)*A+i];if(p<=bp[3])continue;var j=3;while(j>0&&p>bp[j-1]){bp[j]=bp[j-1];b[j]=b[j-1];j--;}bp[j]=p;b[j]=k;}
+  if(bp[0]<=thr)continue;var x=out[i],y=out[A+i],w=out[2*A+i],h=out[3*A+i],alt=[];
+  for(j=1;j<4;j++)if(b[j]>=0&&bp[j]>=0.03)alt.push({k:b[j],p:bp[j]});
+  c.push({k:b[0],p:bp[0],alt:alt,x1:(x-w/2-m.ox)/m.s+(m.cx||0),y1:(y-h/2-m.oy)/m.s+(m.cy||0),x2:(x+w/2-m.ox)/m.s+(m.cx||0),y2:(y+h/2-m.oy)/m.s+(m.cy||0)});}
  c.sort(function(a,b){return b.p-a.p;});
  var keep=[];c.forEach(function(d){for(var j=0;j<keep.length;j++)if(keep[j].k===d.k&&camIou(keep[j],d)>0.5)return;keep.push(d);});
  return keep;
 }
-// Multi-frame vote. Each frame's detections are reduced to {card: best p, x}. Evidence adds up over every frame since
-// the last reset: a card is a candidate once seen (p >= CAMV.seen) in CAMV.need frames, candidates are ranked by summed
-// confidence and the best 5 are shown. Scanning stops when 5 cards have stayed the same for CAMV.stable frames
-// (and at least CAMV.min frames ran), so a one-off misread is outvoted by the card that keeps coming back.
-// A shown card is "unsure" if its mean confidence is below CAMV.sure or it was missed in most frames since it first
-// appeared; the user must confirm or fix it (nothing is committed automatically).
-var CAMV={need:3,seen:0.35,sure:0.6,max:5,stable:4,min:8,hit:0.5};
+// One frame's detections reduced to the best box per card id.
+function camFrame(dets){var f={};dets.forEach(function(d){var id=camCardId(d.k);if(!f[id]||d.p>f[id].p)f[id]=d;});return f;}
+// Runner-up classes seen on this card's boxes, best first (card ids).
+function camAltList(c,n){return Object.keys(c.alt).map(Number).filter(function(a){return a!==c.c;}).sort(function(a,b){return c.alt[b]-c.alt[a];}).slice(0,n||3);}
+// Multi-frame vote. Each frame's detections are reduced to the best box per card. A card is a candidate once seen
+// (p >= CAMV.seen) in CAMV.need frames; candidates are ranked by summed confidence and the best 5 lock.
+// done(): 5 locked cards stayed the same for CAMV.stable frames (and at least CAMV.min frames ran).
+// stall(): fewer than 5 locked but nothing changed for CAMV.stable frames after CAMV.give frames (or CAMV.cap reached):
+//   the hand is filled anyway and the missing slots get "likely" suggestions (cards seen too rarely or too weakly
+//   to lock, never a guess when nothing was seen). A shown card is "unsure" if its mean confidence is below
+//   CAMV.sure or it was missed in most frames since it first appeared.
+var CAMV={need:3,seen:0.35,sure:0.6,max:5,stable:4,min:8,hit:0.5,give:14,cap:36,weak:0.2,pend:0.45};
 function camVoter(){
- var V={F:0,S:{},top:[],same:0,add:function(dets){
-  var f={};dets.forEach(function(d){var id=camCardId(d.k),cx=(d.x1+d.x2)/2;if(!f[id]||d.p>f[id].p)f[id]={p:d.p,x:cx};});
-  V.F++;for(var id in f)if(f[id].p>=CAMV.seen){var c=V.S[id]||(V.S[id]={c:+id,n:0,sum:0,x:0,first:V.F});c.n++;c.sum+=f[id].p;c.x=f[id].x;}
+ var V={F:0,S:{},top:[],same:0,key:'',add:function(dets){
+  var f=camFrame(dets);V.F++;
+  for(var id in f){var d=f[id];if(d.p<CAMV.weak)continue;
+   var c=V.S[id]||(V.S[id]={c:+id,n:0,sum:0,w:0,x:0,b:null,alt:{},first:0});
+   if(d.p>=CAMV.seen){if(!c.n)c.first=V.F;c.n++;c.sum+=d.p;}else c.w+=d.p;
+   c.x=(d.x1+d.x2)/2;c.b=d;(d.alt||[]).forEach(function(a){var q=camCardId(a.k);c.alt[q]=(c.alt[q]||0)+a.p;});}
   var L=[];for(id in V.S)if(V.S[id].n>=CAMV.need)L.push(V.S[id]);
   L.sort(function(a,b){return b.sum-a.sum;});L=L.slice(0,CAMV.max);
   var key=L.map(function(c){return c.c;}).sort().join(',');V.same=key===V.key?V.same+1:0;V.key=key;
-  V.top=L.map(function(c){var p=c.sum/c.n,r=c.n/(V.F-c.first+1);return {c:c.c,p:p,x:c.x,n:c.n,unsure:p<CAMV.sure||r<CAMV.hit};});
+  V.top=L.map(function(c){var p=c.sum/c.n,r=c.n/(V.F-c.first+1);return {c:c.c,p:p,x:c.x,b:c.b,n:c.n,ev:c.sum,alts:camAltList(c),unsure:p<CAMV.sure||r<CAMV.hit};});
   return V.cards();},
   has:function(c){return V.top.some(function(L){return L.c===c;});},
   cards:function(){return V.top.slice().sort(function(a,b){return a.x-b.x;});},
+  // suggestions for slots that did not lock: seen at least once, not the same corner as a locked card (a misread of it)
+  pending:function(){var out=[];for(var id in V.S){var c=V.S[id];if(V.has(c.c)||c.sum+c.w<CAMV.pend)continue;
+    if(V.top.some(function(t){return t.b&&c.b&&camIou(t.b,c.b)>0.3;}))continue;
+    out.push({c:c.c,p:(c.sum+c.w)/Math.max(1,c.n+(c.w>0?1:0)),x:c.x,b:c.b,n:c.n,ev:c.sum+c.w,alts:camAltList(c),unsure:true,likely:true});}
+   return out.sort(function(a,b){return b.ev-a.ev;});},
+  // locked cards plus likely suggestions up to 5, left-to-right
+  fill:function(){var L=V.top.slice(),P=V.pending();for(var i=0;i<P.length&&L.length<CAMV.max;i++)L.push(P[i]);return L.sort(function(a,b){return a.x-b.x;});},
+  seen:function(){return V.top.length+V.pending().length;},
   done:function(){return V.top.length>=CAMV.max&&V.same>=CAMV.stable&&V.F>=CAMV.min;},
+  stall:function(){return V.done()||(V.F>=CAMV.give&&V.same>=CAMV.stable&&V.seen()>0)||(V.F>=CAMV.cap&&V.seen()>0);},
   reset:function(){V.F=0;V.S={};V.top=[];V.same=0;V.key='';}};
  return V;
 }
-// One still picture (photo fallback): two zoom levels, confidences summed per card, top 5 kept.
+// One still picture: several passes (zoom levels), confidences summed per card, top 5 kept (sum >= 0.5); weaker
+// cards (sum >= 0.25, not on a kept card's corner) fill empty slots as "likely".
 function camStill(results){
- var s={};results.forEach(function(dets){var f={};dets.forEach(function(d){var id=camCardId(d.k);if(!f[id]||d.p>f[id].p)f[id]={p:d.p,x:(d.x1+d.x2)/2};});
-  for(var id in f){var c=s[id]||(s[id]={c:+id,sum:0,p:0,x:f[id].x});c.sum+=f[id].p;if(f[id].p>c.p){c.p=f[id].p;c.x=f[id].x;}}});
- var L=Object.keys(s).map(function(k){return s[k];}).filter(function(c){return c.sum>=0.5;}).sort(function(a,b){return b.sum-a.sum;}).slice(0,CAMV.max);
+ var s={};results.forEach(function(dets){var f=camFrame(dets);
+  for(var id in f){var d=f[id],c=s[id]||(s[id]={c:+id,sum:0,p:0,x:(d.x1+d.x2)/2,b:d,alt:{}});c.sum+=d.p;if(d.p>c.p){c.p=d.p;c.x=(d.x1+d.x2)/2;c.b=d;}
+   (d.alt||[]).forEach(function(a){var q=camCardId(a.k);c.alt[q]=(c.alt[q]||0)+a.p;});}});
+ var A=Object.keys(s).map(function(k){var c=s[k];c.ev=c.sum;c.alts=camAltList(c);return c;}).sort(function(a,b){return b.sum-a.sum;});
+ var L=A.filter(function(c){return c.sum>=0.5;}).slice(0,CAMV.max);
  L.forEach(function(c){c.unsure=c.p<CAMV.sure;});
+ A.forEach(function(c){if(L.length>=CAMV.max||c.sum>=0.5||c.sum<0.25)return;
+  if(L.some(function(t){return camIou(t.b,c.b)>0.3;}))return;c.unsure=true;c.likely=true;L.push(c);});
  return L.sort(function(a,b){return a.x-b.x;});
 }
+// Duplicate guard. groups: [{cards:[...fill entries]}]; taken: card ids already held elsewhere (e.g. the other
+// player's hand). A card claimed twice stays with the group that has more evidence; the loser's slot takes its first
+// free runner-up class as "likely", or is dropped. Returns new card lists (group order kept).
+function camResolve(groups,taken){
+ var own={},used={};(taken||[]).forEach(function(c){used[c]=1;});
+ function rank(c){return (c.likely?0:1e3)+(c.ev||0);}
+ groups.forEach(function(g,gi){g.cards.forEach(function(c){if(used[c.c])return;var o=own[c.c];if(!o||rank(c)>o.ev)own[c.c]={g:gi,ev:rank(c)};});});
+ var out=groups.map(function(){return [];}),fix=[];
+ groups.forEach(function(g,gi){g.cards.forEach(function(c){if(!used[c.c]&&own[c.c].g===gi){out[gi].push(c);used[c.c]=1;}else fix.push([gi,c]);});});
+ fix.forEach(function(q){var c=q[1],a=(c.alts||[]).filter(function(x){return !used[x]&&!own[x];})[0];
+  if(a==null||out[q[0]].length>=CAMV.max)return;used[a]=1;
+  out[q[0]].push({c:a,p:c.p,x:c.x,b:c.b,ev:0,alts:[c.c].concat((c.alts||[]).filter(function(x){return x!==a;})),unsure:true,likely:true,dup:c.c});});
+ return out.map(function(L){return L.sort(function(a,b){return a.x-b.x;});});
+}
+/* --- src/ui/camera-extras.js
+ * Owns: Camera scanner settings and small helpers: persisted settings (localStorage 'plo5cam': sure threshold, sound,
+ *       auto-rescan, keep awake, last zoom), the settings panel, torch toggle (where the camera exposes it), screen
+ *       wake lock, lock beep + vibration, the undo stack for automatic fills, and "likely" card marks shown on the
+ *       main page until that card is changed.
+ * Depends on: ui/i18n.js (tr), ui/state.js (hands), ui/paint.js (changed). Called from ui/camera.js.
+ */
+var CAM_SET_KEY='plo5cam';
+function camSetLoad(){var d={sure:60,snd:true,auto:true,awake:true,zoom:1};
+ try{var o=JSON.parse(localStorage.getItem(CAM_SET_KEY)||'{}');for(var k in o)if(k in d)d[k]=o[k];}catch(e){}
+ d.sure=Math.max(30,Math.min(90,+d.sure||60));return d;}
+function camSetSave(){try{localStorage.setItem(CAM_SET_KEY,JSON.stringify(camSet));}catch(e){}}
+function camSetApply(){CAMV.sure=camSet.sure/100;}
+// --- settings panel (gear)
+function camSetHtml(){
+ function tg(id,on,lab){return '<label class="cam-tg"><span>'+lab+'</span><button class="tog'+(on?' on':'')+'" data-cset="'+id+'" role="switch" aria-checked="'+on+'"><i></i></button></label>';}
+ return '<div class="cam-pt"><b>'+tr('cam.set.title')+'</b><button class="cam-x sm" data-cset="x" aria-label="'+tr('close')+'">×</button></div>'+
+  '<label class="cam-tg col"><span>'+tr('cam.set.sure',{n:camSet.sure})+'</span><input type="range" min="30" max="90" step="5" value="'+camSet.sure+'" data-cset="sure"></label>'+
+  '<div class="cam-note">'+tr('cam.set.sure.note')+'</div>'+
+  tg('snd',camSet.snd,tr('cam.set.snd'))+tg('auto',camSet.auto,tr('cam.set.auto'))+
+  tg('awake',camSet.awake,tr('cam.set.awake')+(('wakeLock' in navigator)?'':' <i class="cam-na">'+tr('cam.set.na')+'</i>'))+
+  '<div class="cam-note">'+camDevNote()+'</div>';}
+function camDevNote(){var z=camZ.hw?tr('cam.dev.zoomhw',{max:(+camZ.max).toFixed(1)}):tr('cam.dev.zoomdg'),t=cam.torchOk?tr('cam.dev.torch'):tr('cam.dev.notorch');return cam.stream?z+' '+t:tr('cam.dev.photo');}
+function camSetOpen(on){var e=$('camSet');if(!e)return;e.hidden=!on;if(on)e.innerHTML=camSetHtml();}
+function camSetClick(e){var t=e.target.closest('[data-cset]');if(!t||t.tagName==='INPUT')return;var k=t.dataset.cset;
+ if(k==='x'){camSetOpen(false);return;}
+ camSet[k]=!camSet[k];camSetSave();if(k==='awake')camAwake(cam.on&&!!cam.stream);camSetOpen(true);}
+function camSetInput(e){var t=e.target;if(t.dataset.cset!=='sure')return;camSet.sure=+t.value;camSetSave();camSetApply();
+ t.previousElementSibling.textContent=tr('cam.set.sure',{n:camSet.sure});camRemark();}
+// --- torch (iOS 17.4+ Safari and Android Chrome expose it on the rear camera; getSettings() can be stale, so keep our own state)
+function camTorchInit(){var tk=cam.stream&&cam.stream.getVideoTracks()[0],c=tk&&tk.getCapabilities?tk.getCapabilities():{};cam.torchOk=!!c.torch;cam.torch=false;camTools();}
+function camTorch(){var tk=cam.stream&&cam.stream.getVideoTracks()[0];if(!tk||!cam.torchOk)return;var on=!cam.torch;
+ tk.applyConstraints({advanced:[{torch:on}]}).then(function(){cam.torch=on;camTools();},function(){cam.torchOk=false;camTools();});}
+// --- keep the screen awake while the live camera runs (Screen Wake Lock: Safari 16.4+, Chrome)
+function camAwake(on){
+ if(!on||!camSet.awake){if(cam.wl){try{cam.wl.release();}catch(e){}cam.wl=null;}return;}
+ if(cam.wl||!('wakeLock' in navigator))return;navigator.wakeLock.request('screen').then(function(w){if(!cam.on){w.release();return;}cam.wl=w;w.addEventListener('release',function(){if(cam.wl===w)cam.wl=null;});},function(){});}
+// --- lock feedback: short beep (Web Audio, unlocked by the camera-button tap) + vibration where supported (not iPhone)
+function camAudioInit(){if(cam.ac||!camSet.snd)return;var A=window.AudioContext||window.webkitAudioContext;if(!A)return;try{cam.ac=new A();cam.ac.resume&&cam.ac.resume();}catch(e){}}
+function camBeep(){
+ if(navigator.vibrate)try{navigator.vibrate(40);}catch(e){}
+ if(!camSet.snd)return;camAudioInit();var a=cam.ac;if(!a)return;try{var o=a.createOscillator(),g=a.createGain(),t=a.currentTime;
+  o.frequency.value=1046;g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.25,t+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+0.12);
+  o.connect(g);g.connect(a.destination);o.start(t);o.stop(t+0.14);}catch(e){}}
+// --- undo for automatic fills (both hands are snapshotted before every fill)
+var camUndoStack=[];
+function camSnap(){camUndoStack.push({h:[hands[0].slice(),hands[1].slice()],lk:[camLikely[0].slice(),camLikely[1].slice()]});if(camUndoStack.length>12)camUndoStack.shift();}
+function camUndo(){var s=camUndoStack.pop();if(!s)return false;
+ for(var p=0;p<2;p++){var ch=hands[p].join()!==s.h[p].join();hands[p].length=0;s.h[p].forEach(function(c){hands[p].push(c);});camLikely[p]=s.lk[p];if(ch)changed(p);}
+ return true;}
+// --- "likely" marks: card ids per player that were filled as a suggestion; shown dashed with ? until replaced
+var camLikely=[[],[]];
+function camLk(p,c){return typeof camLikely!=='undefined'&&camLikely[p]&&camLikely[p].indexOf(c)>=0&&hands[p].indexOf(c)>=0?' likely':'';}
+var camSet=camSetLoad();camSetApply();
+/* --- src/ui/camera-zoom.js
+ * Owns: The scanner's view mapping and zoom: where the live video / still photo sits on screen (cover for live,
+ *       contain for photos), source<->screen coordinate maps used by the box overlay and the zone editor, hardware
+ *       zoom (MediaStreamTrack zoom constraint, iOS 17+ Safari / Android Chrome) with a digital fallback that crops
+ *       the frame fed to the detector and the preview, pinch / drag-to-pan / double-tap gestures, +/- buttons and the
+ *       level label. The last live zoom is remembered (camSet.zoom).
+ * Depends on: ui/camera-extras.js (camSet, camSetSave), ui/camera.js (cam, camDraw, camStillRedo). $ from ui/cards.js.
+ */
+var CAMZ_DMAX=5,camZ={hw:false,min:1,max:1,step:0.1,v:1,dz:1,ux:0.5,uy:0.5,busy:false,want:null};
+function camSrcWH(){var S=cam.src;if(!S)return null;var w=S.videoWidth||S.width,h=S.videoHeight||S.height;return w&&h?{w:w,h:h}:null;}
+// screen = o + src * k (CSS px inside #cam). The whole frame is fitted (contain) into the free area between the top
+// bar and the bottom panel, so what you see is exactly what the detector reads and zones can reach every corner.
+function camMap(){var d=$('cam'),W=d.clientWidth,H=d.clientHeight,S=camSrcWH();if(!S)return null;
+ var tb=d.querySelector('.cam-top'),bp=$('camB'),top=tb?tb.offsetHeight:0,bot=H-(bp?bp.offsetHeight:0);if(bot-top<120){top=0;bot=H;}
+ var AH=bot-top,s0=Math.min(W/S.w,AH/S.h),k=s0*camZ.dz;
+ var hx=W/2/k/S.w,hy=AH/2/k/S.h;camZ.ux=hx>=0.5?0.5:Math.max(hx,Math.min(1-hx,camZ.ux));camZ.uy=hy>=0.5?0.5:Math.max(hy,Math.min(1-hy,camZ.uy));
+ return {W:W,H:H,top:top,bot:bot,sw:S.w,sh:S.h,k:k,ox:W/2-camZ.ux*S.w*k,oy:top+AH/2-camZ.uy*S.h*k};}
+function camToScreen(m,x,y){return [m.ox+x*m.k,m.oy+y*m.k];}
+function camToSrcN(m,X,Y){return [Math.max(0,Math.min(1,(X-m.ox)/m.k/m.sw)),Math.max(0,Math.min(1,(Y-m.oy)/m.k/m.sh))];}
+function camApplyView(){var m=camMap(),el=cam.still?$('camPc'):$('camV');if(!m||!el)return camDraw();
+ el.style.left=m.ox+'px';el.style.top=m.oy+'px';el.style.width=m.sw*m.k+'px';el.style.height=m.sh*m.k+'px';
+ // single-hand guide: inset box on the visible part of the frame
+ var g=$('camG'),x0=Math.max(0,m.ox),y0=Math.max(m.top,m.oy),x1=Math.min(m.W,m.ox+m.sw*m.k),y1=Math.min(m.bot,m.oy+m.sh*m.k),ix=(x1-x0)*0.06,iy=(y1-y0)*0.12;
+ if(g){g.style.left=x0+ix+'px';g.style.top=y0+iy+'px';g.style.width=Math.max(0,x1-x0-2*ix)+'px';g.style.height=Math.max(0,(y1-y0)*0.62)+'px';}
+ camDraw();}
+// detector input: the whole frame at 1x, the visible part when digitally zoomed
+function camCrop(){if(camZ.dz<=1.01)return null;var m=camMap();if(!m)return null;
+ var a=camToSrcN(m,0,m.top),b=camToSrcN(m,m.W,m.bot),x=Math.floor(a[0]*m.sw),y=Math.floor(a[1]*m.sh);
+ return {x:x,y:y,w:Math.max(16,Math.ceil(b[0]*m.sw)-x),h:Math.max(16,Math.ceil(b[1]*m.sh)-y)};}
+function camZoomInit(){var tk=cam.stream&&cam.stream.getVideoTracks()[0],c=tk&&tk.getCapabilities?tk.getCapabilities():{};
+ camZ.dz=1;camZ.ux=camZ.uy=0.5;
+ if(c.zoom&&c.zoom.max>c.zoom.min){camZ.hw=true;camZ.min=c.zoom.min;camZ.max=c.zoom.max;camZ.step=c.zoom.step||0.1;
+  var st=tk.getSettings?tk.getSettings():{};camZ.v=st.zoom||camZ.min;camZoomTo(camSet.zoom||camZ.v,true);}
+ else{camZ.hw=false;camZoomTo(camSet.zoom||1,true);}}
+function camZLive(){return !!(cam.stream&&!cam.still&&camZ.hw);}
+function camZLevel(){return camZLive()?camZ.v:camZ.dz;}
+function camZoomTo(v,quiet){
+ if(camZLive()){v=Math.max(camZ.min,Math.min(camZ.max,Math.round(v/camZ.step)*camZ.step));camZ.v=v;camZ.want=v;camHwPush();}
+ else{v=Math.max(1,Math.min(CAMZ_DMAX,v));camZ.dz=v;if(v<=1.01){camZ.dz=1;}camApplyView();}
+ if(!cam.still){camSet.zoom=+v.toFixed(2);camSetSave();}
+ camZLabel();if(cam.still&&!quiet)camStillRedo();}
+// one applyConstraints in flight at a time; the latest wanted value wins
+function camHwPush(){if(camZ.busy||camZ.want==null)return;var tk=cam.stream&&cam.stream.getVideoTracks()[0];if(!tk)return;var v=camZ.want;camZ.want=null;camZ.busy=true;
+ tk.applyConstraints({advanced:[{zoom:v}]}).then(function(){camZ.busy=false;camHwPush();},function(){camZ.busy=false;camZ.hw=false;camZ.v=1;camZLabel();});}
+function camZoomBy(f){camZoomTo(camZLevel()*f);}
+function camZLabel(){var e=$('camZL');if(e)e.textContent=(camZLevel()<10?camZLevel().toFixed(1):Math.round(camZLevel()))+'×';
+ var hw=$('camZH');if(hw)hw.textContent=camZLive()?tr('cam.zoom.hw'):tr('cam.zoom.dg');}
+// gestures on the view layer: 2 fingers pinch, 1 finger pans when digitally zoomed, double tap resets to 1x
+function camGestures(el){var P={},pinch=null,pan=null,lastTap=0;
+ function pts(){return Object.keys(P).map(function(k){return P[k];});}
+ el.addEventListener('pointerdown',function(e){if(cam.zedit)return;el.setPointerCapture&&el.setPointerCapture(e.pointerId);P[e.pointerId]={x:e.clientX,y:e.clientY};var L=pts();
+  if(L.length===2){pinch={d:Math.hypot(L[0].x-L[1].x,L[0].y-L[1].y)||1,z:camZLevel()};pan=null;}
+  else if(L.length===1){pan={x:e.clientX,y:e.clientY,ux:camZ.ux,uy:camZ.uy,moved:false};}});
+ el.addEventListener('pointermove',function(e){if(!P[e.pointerId])return;P[e.pointerId]={x:e.clientX,y:e.clientY};var L=pts();
+  if(pinch&&L.length>=2){var d=Math.hypot(L[0].x-L[1].x,L[0].y-L[1].y);camZoomTo(pinch.z*d/pinch.d,true);return;}
+  if(pan&&!camZLive()&&camZ.dz>1){var m=camMap();if(!m)return;var dx=e.clientX-pan.x,dy=e.clientY-pan.y;if(Math.abs(dx)+Math.abs(dy)>6)pan.moved=true;
+   camZ.ux=pan.ux-dx/m.k/m.sw;camZ.uy=pan.uy-dy/m.k/m.sh;camApplyView();}});
+ function up(e){if(!P[e.pointerId])return;delete P[e.pointerId];var L=pts();
+  if(pinch&&L.length<2){pinch=null;if(cam.still)camStillRedo();return;}
+  if(pan&&!L.length){var moved=pan.moved;pan=null;if(moved){if(cam.still)camStillRedo();return;}
+   var t=Date.now();if(t-lastTap<300){camZoomTo(camZLive()?camZ.min:1);lastTap=0;}else lastTap=t;}}
+ el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);}
+window.addEventListener('resize',function(){if(typeof cam!=='undefined'&&cam.on)camApplyView();});
+/* --- src/ui/camera-zones.js
+ * Owns: Camera zones: up to 7 rectangles on the camera view (stored normalised to the camera frame, so they also map
+ *       onto loaded photos), each assigned to Player 1, Player 2 or "Other" (read only: cards are shown and count for
+ *       the duplicate guard but are not loaded, since the app has two hands). Saved in localStorage 'plo5camzones'.
+ *       Zone editor (draw / move / resize by drag, select to rename, recolour, reassign, delete, clear all), the
+ *       coloured overlay, and camZoneOf() which routes a detection to its zone.
+ * Depends on: ui/camera-zoom.js (camMap, camToScreen, camToSrcN), ui/camera.js (cam, camDraw, camBottom). $, tr.
+ */
+var CAMZ_MAX=7,CAMZ_KEY='plo5camzones',CAMZ_COL=['#ff9f0a','#0a84ff','#30d158','#ff375f','#bf5af2','#64d2ff','#ffd60a'];
+function camZonesLoad(){try{var a=JSON.parse(localStorage.getItem(CAMZ_KEY)||'[]');if(!Array.isArray(a))return [];
+ return a.filter(function(z){return z&&z.w>0&&z.h>0;}).slice(0,CAMZ_MAX).map(function(z){return {x:+z.x,y:+z.y,w:+z.w,h:+z.h,name:String(z.name||'').slice(0,24),p:[0,1,2].indexOf(+z.p)>=0?+z.p:0,col:(+z.col||0)%CAMZ_COL.length};});}catch(e){return [];}}
+function camZonesSave(){try{localStorage.setItem(CAMZ_KEY,JSON.stringify(camZones));}catch(e){}}
+var camZones=camZonesLoad(),camZsel=-1;
+function camZName(i){var z=camZones[i];return z.name||tr('cam.zone.n',{n:i+1});}
+function camZWho(p){return p===2?tr('cam.zone.other'):tr('cam.zone.p',{n:p+1});}
+// zone index for a detection (box centre, source px); the smallest containing zone wins; -1 = outside every zone
+function camZoneOf(d,sw,sh){var x=(d.x1+d.x2)/2/sw,y=(d.y1+d.y2)/2/sh,best=-1,ba=9;
+ camZones.forEach(function(z,i){if(x>=z.x&&x<=z.x+z.w&&y>=z.y&&y<=z.y+z.h&&z.w*z.h<ba){ba=z.w*z.h;best=i;}});return best;}
+// overlay (called from camDraw): dashed coloured boxes with "name -> player"; the editor adds handles on the selected one
+function camZonesDraw(g,m){
+ camZones.forEach(function(z,i){var a=camToScreen(m,z.x*m.sw,z.y*m.sh),w=z.w*m.sw*m.k,h=z.h*m.sh*m.k,c=CAMZ_COL[z.col],sel=cam.zedit&&i===camZsel;
+  g.save();g.strokeStyle=c;g.lineWidth=sel?3:2;g.setLineDash(sel?[]:[7,5]);g.strokeRect(a[0],a[1],w,h);g.restore();
+  if(cam.zedit){g.fillStyle=c+'22';g.fillRect(a[0],a[1],w,h);}
+  var lab=camZName(i)+' → '+camZWho(z.p);g.font='bold 12px -apple-system,Helvetica,Arial,sans-serif';var tw=g.measureText(lab).width+10;
+  g.fillStyle=c;g.fillRect(a[0],a[1]-18<0?a[1]:a[1]-18,tw,18);g.fillStyle='#000';g.fillText(lab,a[0]+5,(a[1]-18<0?a[1]:a[1]-18)+13);
+  if(sel){g.fillStyle='#fff';[[0,0],[w,0],[0,h],[w,h]].forEach(function(q){g.beginPath();g.arc(a[0]+q[0],a[1]+q[1],7,0,7);g.fill();g.strokeStyle=c;g.lineWidth=2;g.stroke();});}});}
+function camZEdit(on){cam.zedit=on;camZsel=on&&camZones.length?Math.min(Math.max(camZsel,0),camZones.length-1):-1;
+ var e=$('camZE');if(e)e.hidden=!on;$('cam').classList.toggle('zedit',on);
+ if(on){camFreeze(true,true);}else{camFreeze(false,true);camRestartVote();}
+ camTools();camBottom();camDraw();}
+function camZPanel(){
+ var s='<div class="cam-pt"><b>'+tr('cam.zone.title',{n:camZones.length,max:CAMZ_MAX})+'</b></div>';
+ if(camZsel<0||!camZones[camZsel])s+='<div class="cam-note">'+tr(camZones.length>=CAMZ_MAX?'cam.zone.full':'cam.zone.hint')+'</div>';
+ else{var z=camZones[camZsel];
+  s+='<div class="cam-zrow"><input id="camZN" maxlength="24" value="'+String(z.name).replace(/[&"<]/g,function(c){return {'&':'&amp;','"':'&quot;','<':'&lt;'}[c];})+'" placeholder="'+tr('cam.zone.n',{n:camZsel+1})+'" aria-label="'+tr('cam.zone.name')+'">'+
+   '<button class="cam-mini del" data-zact="del">'+tr('cam.zone.del')+'</button></div>'+
+   '<div class="cam-zrow"><div class="seg sw" role="radiogroup" aria-label="'+tr('cam.zone.who')+'">'+[0,1,2].map(function(p){return '<button data-zp="'+p+'" role="radio" aria-checked="'+(z.p===p)+'"'+(z.p===p?' class="on"':'')+'>'+camZWho(p)+'</button>';}).join('')+'</div></div>'+
+   '<div class="cam-zrow cols">'+CAMZ_COL.map(function(c,i){return '<button class="cam-col'+(z.col===i?' on':'')+'" data-zc="'+i+'" style="background:'+c+'" aria-label="'+tr('cam.zone.col',{n:i+1})+'"></button>';}).join('')+'</div>';
+  if(z.p===2)s+='<div class="cam-note">'+tr('cam.zone.other.note')+'</div>';}
+ s+='<div class="cam-acts"><button class="btn" data-zact="clear"'+(camZones.length?'':' disabled')+'>'+tr('cam.zone.clear')+'</button><button class="btn orange" data-zact="done">'+tr('cam.zone.done')+'</button></div>';
+ return s;}
+function camZClick(e){var t=e.target.closest('[data-zact],[data-zp],[data-zc]');if(!t)return;
+ if(t.dataset.zact==='done'){camZEdit(false);return;}
+ if(t.dataset.zact==='clear'){camZones=[];camZsel=-1;}
+ else if(t.dataset.zact==='del'&&camZsel>=0){camZones.splice(camZsel,1);camZsel=-1;}
+ else if(t.dataset.zp!=null&&camZones[camZsel])camZones[camZsel].p=+t.dataset.zp;
+ else if(t.dataset.zc!=null&&camZones[camZsel])camZones[camZsel].col=+t.dataset.zc;
+ camZonesSave();camTools();camBottom();camDraw();}
+function camZNameIn(e){if(e.target.id!=='camZN'||!camZones[camZsel])return;camZones[camZsel].name=e.target.value.slice(0,24);camZonesSave();camDraw();}
+// editor gestures: drag on empty space draws a zone; drag inside moves; drag a corner resizes; tap selects / deselects
+function camZGestures(el){var op=null;
+ function at(e){var r=$('cam').getBoundingClientRect();return [e.clientX-r.left,e.clientY-r.top];}
+ el.addEventListener('pointerdown',function(e){var m=camMap();if(!m)return;var q=at(e),n=camToSrcN(m,q[0],q[1]);el.setPointerCapture&&el.setPointerCapture(e.pointerId);
+  if(camZsel>=0&&camZones[camZsel]){var z=camZones[camZsel],cs=[[0,0],[1,0],[0,1],[1,1]];
+   for(var i=0;i<4;i++){var s=camToScreen(m,(z.x+cs[i][0]*z.w)*m.sw,(z.y+cs[i][1]*z.h)*m.sh);if(Math.hypot(s[0]-q[0],s[1]-q[1])<24){op={t:'size',i:camZsel,fx:cs[i][0]?z.x:z.x+z.w,fy:cs[i][1]?z.y:z.y+z.h};return;}}}
+  var hit=-1;camZones.forEach(function(z,i){if(n[0]>=z.x&&n[0]<=z.x+z.w&&n[1]>=z.y&&n[1]<=z.y+z.h&&(hit<0||z.w*z.h<camZones[hit].w*camZones[hit].h))hit=i;});
+  if(hit>=0){op={t:'move',i:hit,n0:n,z0:{x:camZones[hit].x,y:camZones[hit].y},moved:false};if(camZsel!==hit){camZsel=hit;camBottom();}camDraw();return;}
+  if(camZones.length>=CAMZ_MAX){camZsel=-1;camBottom();camDraw();return;}
+  var used=camZones.map(function(z){return z.col;}),col=0;while(used.indexOf(col)>=0&&col<CAMZ_COL.length-1)col++;
+  var cnt=[0,0];camZones.forEach(function(z){if(z.p<2)cnt[z.p]++;});
+  camZones.push({x:n[0],y:n[1],w:0,h:0,name:'',p:cnt[0]<=cnt[1]?0:1,col:col});op={t:'new',i:camZones.length-1,fx:n[0],fy:n[1]};camZsel=op.i;});
+ el.addEventListener('pointermove',function(e){if(!op)return;var m=camMap();if(!m)return;var q=at(e),n=camToSrcN(m,q[0],q[1]),z=camZones[op.i];
+  if(op.t==='move'){z.x=Math.max(0,Math.min(1-z.w,op.z0.x+n[0]-op.n0[0]));z.y=Math.max(0,Math.min(1-z.h,op.z0.y+n[1]-op.n0[1]));op.moved=true;}
+  else{z.x=Math.min(op.fx,n[0]);z.y=Math.min(op.fy,n[1]);z.w=Math.abs(n[0]-op.fx);z.h=Math.abs(n[1]-op.fy);}
+  camDraw();});
+ function up(){if(!op)return;var z=camZones[op.i];
+  if(op.t!=='move'&&(z.w<0.04||z.h<0.03)){if(op.t==='new'){camZones.splice(op.i,1);camZsel=-1;}else{z.w=Math.max(z.w,0.04);z.h=Math.max(z.h,0.03);}}
+  op=null;camZonesSave();camTools();camBottom();camDraw();}
+ el.addEventListener('pointerup',up);el.addEventListener('pointercancel',up);}
+/* --- src/ui/camera-photo.js
+ * Owns: Loading photos into the scanner: "Load photo" (photo library or camera via <input type=file accept=image/*>,
+ *       no capture attribute, several files allowed), drag-and-drop and paste on desktop, decoding with EXIF
+ *       orientation applied (the browser's <img> decode) and downscaling to at most CAMP_MAX px on the long side,
+ *       then the same pipeline as live mode (zones, auto-fill, likely suggestions). Several photos are read one after
+ *       another; without zones each photo fills the next player. Zoom / pan on a photo re-reads the visible part.
+ * Depends on: ui/camera.js (cam, camOpen, camInfer, camCommit, camStatus, camBottom), ui/camera-zoom.js
+ *       (camApplyView, camCrop, camZLabel), ui/camera-zones.js (camZones). $, tr.
+ */
+var CAMP_MAX=1600,camQ=[],camQn=0,camRedoT=0;
+function camPhotoPick(){var f=$('camF');f.value='';f.click();}
+function camImgs(list){return Array.prototype.filter.call(list||[],function(f){return f&&/^image\//.test(f.type||'')||/\.(jpe?g|png|webp|heic|heif|gif|bmp)$/i.test(f&&f.name||'');});}
+// open (or reuse) the scanner in photo mode and read the files in order
+function camPhotos(files,p){files=camImgs(files);if(!files.length)return;
+ if(!cam.on)camOpen(p==null?0:p,{photo:true});else if(p!=null&&!camZones.length)cam.p=p;
+ camStop();cam.still=true;cam.frozen=false;$('cam').classList.remove('err','live');$('cam').classList.add('still');camTools();
+ camQ=camQ.concat(files);camQn=camQ.length+(cam.st==='photo'?1:0);if(cam.st!=='photo')camNextPhoto();}
+function camNextPhoto(){var f=camQ.shift();if(!f){camQn=0;return;}
+ if(cam.nextP!=null&&!camZones.length){cam.p=cam.nextP;camTools();}cam.nextP=null;
+ cam.st='photo';var i=camQn-camQ.length;camStatus(camQn>1?tr('cam.photo.n',{i:i,n:camQn}):tr('cam.photo.read'));
+ Promise.all([camDecodePhoto(f),camLoad()]).then(function(r){
+  if(!cam.on)return;var cv=$('camPc'),src=r[0];cv.width=src.width;cv.height=src.height;cv.getContext('2d').drawImage(src,0,0);
+  cam.src=cv;camZ.dz=1;camZ.ux=camZ.uy=0.5;camApplyView();camZLabel();
+  return camStillRead().then(function(n){
+   // the next photo fills the other player (shown in the status line; tapping a player in the top bar overrides it)
+   if(!camZones.length&&n&&(camQ.length||!hands[1-cam.p].length))cam.nextP=1-cam.p;
+   cam.st=camQ.length?'photo':'done';if(cam.nextP!=null&&!camQ.length)camStatus(cam.msg+' · '+tr('cam.photo.next',{n:cam.nextP+1}),cam.mcls);
+   camBottom();if(camQ.length)camNextPhoto();});
+ }).catch(function(e){cam.st='done';camQ=[];camStatus(e&&e.cam?tr('cam.photo.bad'):tr('cam.err.model'),'bad');camBottom();});}
+// decode with EXIF orientation (img decode honours it in Safari 13.1+ / Chrome 81+), downscale large photos in one draw
+function camDecodePhoto(file){return new Promise(function(ok,no){var u=URL.createObjectURL(file),im=new Image();
+ im.onload=function(){var w=im.naturalWidth,h=im.naturalHeight,s=Math.min(1,CAMP_MAX/Math.max(w,h)),c=document.createElement('canvas');
+  c.width=Math.max(1,Math.round(w*s));c.height=Math.max(1,Math.round(h*s));var g=c.getContext('2d');g.imageSmoothingEnabled=true;g.imageSmoothingQuality='high';
+  g.drawImage(im,0,0,c.width,c.height);URL.revokeObjectURL(u);ok(c);};
+ im.onerror=function(){URL.revokeObjectURL(u);no({cam:'bad'});};im.src=u;});}
+// read the current photo (visible part when zoomed): 2 zoom passes, then the same zone split + fill as live mode.
+// Resolves to the number of cards placed.
+function camStillRead(){var S=cam.src,cr=camCrop(),R=[];
+ return camInfer(S,S.width,S.height,1,cr).then(function(a){R.push(a);return camInfer(S,S.width,S.height,1/1.6,cr);}).then(function(b){R.push(b);
+  cam.dets=R[0].concat(b).filter(function(x){return x.p>=CAMV.weak;});return camCommit(camSplitStill(R,S.width,S.height),true);});}
+function camSplitStill(R,sw,sh){
+ if(!camZones.length)return [{who:cam.p,cards:camStill(R)}];
+ return camZones.map(function(z,i){return {who:z.p,zi:i,cards:camStill(R.map(function(d){return d.filter(function(x){return camZoneOf(x,sw,sh)===i;});}))};});}
+// zoom / pan on a photo: re-read after the gesture settles
+function camStillRedo(){if(!cam.still||!cam.sess||cam.st==='photo')return;clearTimeout(camRedoT);camRedoT=setTimeout(function(){if(cam.still&&cam.on)camStillRead();},350);}
+// desktop: drop image files anywhere (on a player row = that player), or paste an image
+document.addEventListener('dragover',function(e){if(e.dataTransfer&&Array.prototype.indexOf.call(e.dataTransfer.types||[],'Files')>=0){e.preventDefault();document.body.classList.add('cam-drag');}});
+document.addEventListener('dragleave',function(e){if(!e.relatedTarget)document.body.classList.remove('cam-drag');});
+document.addEventListener('drop',function(e){document.body.classList.remove('cam-drag');var f=camImgs(e.dataTransfer&&e.dataTransfer.files);if(!f.length)return;e.preventDefault();
+ var pl=e.target.closest&&e.target.closest('.pl');camPhotos(f,cam.on?null:pl?+pl.id.slice(2):0);});
+document.addEventListener('paste',function(e){if(e.target&&/^(INPUT|TEXTAREA)$/.test(e.target.tagName))return;var f=camImgs(e.clipboardData&&e.clipboardData.files);if(!f.length)return;e.preventDefault();camPhotos(f,cam.on?null:0);});
 /* --- src/ui/camera.js
- * Owns: The camera scanner: per-player camera button handler, full-screen live view (rear camera via getUserMedia),
- *       lazy loading of onnxruntime-web + the card model from cam/, the scan loop, recognised-card chips,
- *       Use hand / Retry / Close, chip tap -> existing card picker, and the still-photo fallback.
- * Depends on: ui/camera-detect.js (camPrep, camDecode, camVoter, camStill), ui/cards.js (face, back, usedBy, $),
- *       ui/state.js (hands), ui/paint.js (changed, openSheet), ui/i18n.js (tr). Nothing is fetched until the camera opens.
+ * Owns: The camera scanner: per-player camera button, full-screen view (rear camera via getUserMedia or a loaded
+ *       photo), lazy loading of onnxruntime-web + the card model from cam/, the scan loop (whole hand, or one vote per
+ *       zone), automatic fill of the hands when the vote settles (missing cards get "likely" suggestions), the result
+ *       chips with one-tap alternatives, Undo / Load photo / Rescan / Done, pause, auto-rescan watch, and the top bar.
+ * Depends on: ui/camera-detect.js (camPrep, camDecode, camVoter, camStill, camResolve, CAMV), ui/camera-extras.js
+ *       (settings, torch, wake lock, beep, undo, camLikely), ui/camera-zoom.js (view + zoom), ui/camera-zones.js
+ *       (zones + editor), ui/camera-photo.js (photos, drop, paste), ui/cards.js (face, back, $), ui/state.js (hands),
+ *       ui/paint.js (changed, openSheet), ui/i18n.js (tr). Nothing is fetched until the camera opens.
  */
 var CAM_BASE='cam/',CAM_MODEL='cards.onnx',CAM_ORT='ort.wasm.min.js',CAM_MB=3.4;
-var cam={p:0,on:false,st:'',stream:null,sess:null,loading:null,voter:null,cards:[],busy:false,zi:0,dets:[],msg:'',ms:0};
+var cam={p:0,on:false,st:'',stream:null,sess:null,loading:null,V:null,res:[],altOf:{},busy:false,zi:0,dets:[],msg:'',ms:0,still:false,frozen:false,zedit:false,pop:null,watch:false,src:null};
 // Icon lives inside camBtn: layout.js build() runs before this file's top-level vars are assigned.
 function camBtn(p){return '<button class="camb" data-cam="'+p+'" aria-label="'+tr('cam.btn.aria')+'">'+'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1z"/><circle cx="12" cy="13" r="3.6"/></svg>'+'</button>';}
+var CAM_IC={torch:'<path d="M9 2h6l-1 6h3l-7 14 1-9H8z"/>',pause:'<path d="M8 5v14M16 5v14"/>',play:'<path d="M7 4l13 8-13 8z"/>',
+ zones:'<rect x="3" y="3" width="8" height="8" rx="1"/><rect x="13" y="13" width="8" height="8" rx="1"/><path d="M13 3h8v8M3 13v8h8" stroke-dasharray="2 2"/>',
+ gear:'<circle cx="12" cy="12" r="3"/><path d="M12 2v3M12 19v3M2 12h3M19 12h3M4.9 4.9l2.1 2.1M17 17l2.1 2.1M4.9 19.1L7 17M17 7l2.1-2.1"/>'};
+function camIc(n){return '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+CAM_IC[n]+'</svg>';}
 function camLoadScript(src){return new Promise(function(ok,no){var s=document.createElement('script');s.src=src;s.onload=ok;s.onerror=function(){no(new Error('script '+src));};document.head.appendChild(s);});}
 // Lazy: onnxruntime-web (wasm build, ~15 MB wasm) and the int8 card model (~3.4 MB) load on first open only.
 function camLoad(){
@@ -4058,106 +4533,197 @@ function camLoad(){
 function camDom(){
  if($('cam'))return;
  var d=document.createElement('div');d.id='cam';d.className='cam';d.setAttribute('role','dialog');d.setAttribute('aria-modal','true');d.hidden=true;
- d.innerHTML='<video id="camV" playsinline muted autoplay></video><img id="camI" alt=""><canvas id="camO"></canvas>'+
-  '<div class="cam-guide" id="camG"><i></i></div>'+
-  '<div class="cam-top"><b id="camT"></b><button class="cam-x" id="camX">×</button></div>'+
-  '<div class="cam-bot"><div class="cam-stat" id="camS"></div><div class="cam-chips" id="camC"></div>'+
-  '<div class="cam-acts"><button class="btn" id="camR"></button><button class="btn" id="camP"></button><button class="btn orange" id="camU"></button></div></div>'+
-  '<input type="file" accept="image/*" capture="environment" id="camF" hidden><canvas id="camW" width="640" height="640" hidden></canvas>';
+ d.innerHTML='<video id="camV" playsinline muted autoplay></video><canvas id="camPc"></canvas><canvas id="camO"></canvas>'+
+  '<div class="cam-guide" id="camG"><i></i></div><div class="cam-touch" id="camTo"></div><div class="cam-ze" id="camZE" hidden></div>'+
+  '<div class="cam-top"><button class="cam-x" id="camX">×</button><div class="cam-who" id="camWho"></div><div class="cam-tools" id="camTl"></div></div>'+
+  '<div class="cam-zoom" id="camZm"><button id="camZi">+</button><b id="camZL">1.0×</b><button id="camZo">−</button><i id="camZH"></i></div>'+
+  '<div class="cam-set" id="camSet" hidden></div>'+
+  '<div class="cam-bot" id="camB"></div>'+
+  '<input type="file" accept="image/*" multiple id="camF" hidden><canvas id="camW" width="640" height="640" hidden></canvas>';
  document.body.appendChild(d);
- $('camX').onclick=camClose;$('camR').onclick=camRetry;$('camU').onclick=camUse;
- $('camP').onclick=function(){$('camF').value='';$('camF').click();};
- $('camF').onchange=function(){var f=this.files&&this.files[0];if(f)camPhoto(f);};
- $('camC').onclick=function(e){var t=e.target.closest('[data-ci]');if(t)camFix(+t.dataset.ci);};
+ $('camX').onclick=camClose;
+ $('camF').onchange=function(){if(this.files&&this.files.length)camPhotos(this.files);};
+ $('camZi').onclick=function(){camZoomBy(1.25);};$('camZo').onclick=function(){camZoomBy(0.8);};
+ $('camWho').onclick=function(e){var t=e.target.closest('[data-cwho]');if(!t)return;cam.nextP=null;if(+t.dataset.cwho===cam.p)return;cam.p=+t.dataset.cwho;camTools();
+  if(cam.still)camStillRedo0();else camRestartVote();};
+ $('camTl').onclick=function(e){var t=e.target.closest('[data-ct]');if(!t)return;var k=t.dataset.ct;
+  if(k==='torch')camTorch();else if(k==='pause')camFreeze(!cam.frozen);else if(k==='zones')camZEdit(!cam.zedit);else if(k==='set')camSetOpen($('camSet').hidden);};
+ $('camSet').onclick=camSetClick;$('camSet').oninput=camSetInput;
+ $('camB').onclick=camBotClick;$('camB').oninput=camZNameIn;
+ camGestures($('camTo'));camZGestures($('camZE'));
+ $('camV').addEventListener('loadedmetadata',camApplyView);$('camV').addEventListener('resize',camApplyView);
 }
-function camLabels(){
- $('camT').textContent=tr('cam.title',{n:cam.p+1});$('camX').setAttribute('aria-label',tr('close'));
- $('camR').textContent=tr('cam.retry');$('camP').textContent=tr('cam.photo');$('camU').textContent=tr('cam.use');
- $('camG').setAttribute('data-hint',tr('cam.hint'));
-}
+function camStillRedo0(){camStillRedo();}
+// top bar: player selector (no zones), torch, pause, zones, settings
+function camTools(){if(!$('cam'))return;
+ $('camWho').innerHTML=camZones.length?'<span class="cam-zc">'+tr('cam.zone.title',{n:camZones.length,max:CAMZ_MAX})+'</span>':
+  '<div class="seg sw" role="radiogroup" aria-label="'+tr('cam.who')+'">'+[0,1].map(function(p){return '<button data-cwho="'+p+'" role="radio" aria-checked="'+(cam.p===p)+'"'+(cam.p===p?' class="on"':'')+'>'+tr('player',{n:p+1})+'</button>';}).join('')+'</div>';
+ var s='';
+ if(cam.torchOk&&cam.stream)s+='<button class="cam-ib'+(cam.torch?' on':'')+'" data-ct="torch" aria-label="'+tr('cam.torch')+'">'+camIc('torch')+'</button>';
+ if(cam.stream&&!cam.still)s+='<button class="cam-ib'+(cam.frozen?' on':'')+'" data-ct="pause" aria-label="'+tr('cam.freeze')+'">'+camIc(cam.frozen?'play':'pause')+'</button>';
+ s+='<button class="cam-ib'+(cam.zedit?' on':'')+(camZones.length?' has':'')+'" data-ct="zones" aria-label="'+tr('cam.zones')+'">'+camIc('zones')+'</button>';
+ s+='<button class="cam-ib" data-ct="set" aria-label="'+tr('cam.set')+'">'+camIc('gear')+'</button>';
+ $('camTl').innerHTML=s;$('cam').classList.toggle('zones',camZones.length>0);$('cam').setAttribute('aria-label',tr('cam.title',{n:cam.p+1}));
+ $('camZi').setAttribute('aria-label',tr('cam.zoom.in'));$('camZo').setAttribute('aria-label',tr('cam.zoom.out'));
+ $('camG').setAttribute('data-hint',tr('cam.hint'));$('camX').setAttribute('aria-label',tr('close'));camZLabel();}
+function camLabels(){camTools();camBottom();if(!$('camSet').hidden)camSetOpen(true);}
 // loading progress never overwrites an error message (permission / https errors arrive before the model finishes)
 function camLoadMsg(s){if(cam.st!=='err')camStatus(s);}
-function camStatus(s,cls){cam.msg=s;var e=$('cam')&&$('camS');if(e){e.textContent=s;e.className='cam-stat'+(cls?' '+cls:'');}}
-function camOpen(p){
- camDom();if($('camI').src)URL.revokeObjectURL($('camI').src);cam.p=p;cam.on=true;cam.st='start';cam.cards=[];cam.voter=camVoter();cam.dets=[];
- var d=$('cam');d.hidden=false;cam.src=null;$('camI').removeAttribute('src');document.body.classList.add('open-cam');d.className='cam';camLabels();camChips();camDraw();
+function camStatus(s,cls){cam.msg=s;cam.mcls=cls||'';var e=$('cam')&&$('camS');if(e){e.textContent=s;e.className='cam-stat'+(cls?' '+cls:'');}}
+// opts.photo: open straight into photo mode (drop / paste), no camera
+function camOpen(p,opts){
+ camDom();cam.p=p;cam.on=true;cam.st='start';cam.res=[];cam.altOf={};cam.dets=[];cam.still=false;cam.frozen=false;cam.zedit=false;cam.pop=null;cam.nextP=null;cam.watch=false;cam.torchOk=false;
+ camNewVote();camQ=[];
+ var d=$('cam');d.hidden=false;cam.src=null;$('camZE').hidden=true;$('camSet').hidden=true;document.body.classList.add('open-cam');d.className='cam';camAudioInit();
+ camZ.dz=1;camZ.ux=camZ.uy=0.5;camZ.hw=false;camTools();camBottom();camDraw();
+ if(opts&&opts.photo){cam.still=true;d.classList.add('still');camLoad().catch(function(){});return;}
  var secure=window.isSecureContext!==false,md=navigator.mediaDevices&&navigator.mediaDevices.getUserMedia;
  if(!secure||!md){camErr(tr(secure?'cam.err.none':'cam.err.https'));camLoad().catch(function(){});return;}
  camStatus(tr('cam.starting'));
  var gum=navigator.mediaDevices.getUserMedia({audio:false,video:{facingMode:{ideal:'environment'},width:{ideal:1280},height:{ideal:720}}});
  Promise.all([gum,camLoad()]).then(function(r){
-  if(!cam.on){r[0].getTracks().forEach(function(t){t.stop();});return;}
+  if(!cam.on||cam.still){r[0].getTracks().forEach(function(t){t.stop();});return;}
   cam.stream=r[0];var v=$('camV');cam.src=v;v.srcObject=cam.stream;var pl=v.play();if(pl&&pl.catch)pl.catch(function(){});
-  d.classList.add('live');cam.st='scan';camStatus(tr('cam.scan',{n:0}));camLoop();
+  d.classList.add('live');camTorchInit();camZoomInit();camAwake(true);camApplyView();cam.st='scan';camStatus(camScanMsg());camTools();camBottom();camLoop();
  }).catch(function(e){
   gum.then(function(s){if(!cam.stream)s.getTracks().forEach(function(t){t.stop();});},function(){});
-  var n=e&&e.name;
+  if(cam.still)return;var n=e&&e.name;
   camErr(n==='NotAllowedError'||n==='SecurityError'?tr('cam.err.denied'):n==='NotFoundError'||n==='OverconstrainedError'||n==='NotReadableError'?tr('cam.err.none'):tr('cam.err.model'));
  });
 }
-function camErr(s){cam.st='err';$('cam').classList.add('err');camStatus(s,'bad');camChips();}
-function camStop(){cam.st='';if(cam.stream){cam.stream.getTracks().forEach(function(t){t.stop();});cam.stream=null;}var v=$('camV');if(v)v.srcObject=null;}
-function camClose(){cam.on=false;camStop();var d=$('cam');if(d)d.hidden=true;document.body.classList.remove('open-cam');}
-function camRetry(){if(!cam.stream){camOpen(cam.p);return;}cam.voter.reset();cam.cards=[];cam.dets=[];camChips();camDraw();
- var v=$('camV');if(v.paused){var pl=v.play();if(pl&&pl.catch)pl.catch(function(){});}cam.st='scan';camStatus(tr('cam.scan',{n:0}));if(!cam.busy)camLoop();}
+function camErr(s){cam.st='err';$('cam').classList.add('err');camStatus(s,'bad');camBottom();}
+function camStop(){if(cam.st==='scan')cam.st='';if(cam.stream){cam.stream.getTracks().forEach(function(t){t.stop();});cam.stream=null;}var v=$('camV');if(v)v.srcObject=null;camAwake(false);cam.torch=false;}
+function camClose(){cam.on=false;camStop();cam.st='';camQ=[];var d=$('cam');if(d)d.hidden=true;document.body.classList.remove('open-cam');build();}
+// one voter per zone (or one for the whole hand)
+function camNewVote(){cam.V=camZones.length?camZones.map(function(){return camVoter();}):[camVoter()];cam.zi=0;}
+function camRestartVote(){camNewVote();cam.watch=false;cam.dets=[];if(cam.still||!cam.stream){if(cam.still&&cam.src&&cam.sess&&cam.st!=='photo')camStillRead();camBottom();camDraw();return;}
+ cam.st='scan';cam.res=[];camFreeze(false,true);camStatus(camScanMsg());camBottom();camDraw();if(!cam.busy)camLoop();}
+function camLive(){if(!cam.on)return;cam.still=false;$('cam').classList.remove('still','err');camOpen(cam.p);}
+function camFreeze(on,quiet){cam.frozen=on;var v=$('camV');
+ if(v&&cam.stream){if(on)v.pause();else{var pl=v.play();if(pl&&pl.catch)pl.catch(function(){});}}
+ if(!quiet)camStatus(on?tr('cam.frozen'):camScanMsg());camTools();if(!on&&!cam.busy)setTimeout(camLoop,30);}
+function camScanMsg(){if(cam.watch)return camDoneMsg()+' · '+tr('cam.watch');
+ var n=0;cam.V.forEach(function(v){n+=v.top.length;});return camZones.length?tr('cam.scan.z',{z:camZones.length,n:n}):tr('cam.scan',{n:n});}
 // Scan loop: one inference at a time; zoom alternates 1 and 1/1.6 so both normal and close-up cards are read.
 function camLoop(){
- if(!cam.on||cam.st!=='scan'||cam.busy)return;
+ if(!cam.on||cam.busy||cam.frozen||cam.zedit||!cam.stream||(cam.st!=='scan'&&cam.st!=='done'))return;
+ if(cam.st==='done'&&!cam.watch)return;
  var v=$('camV');if(!v.videoWidth){setTimeout(camLoop,120);return;}
  cam.busy=true;var z=cam.zi++%2?1/1.6:1,t0=performance.now();
- camInfer(v,v.videoWidth,v.videoHeight,z).then(function(dets){
-  cam.busy=false;cam.ms=performance.now()-t0;if(!cam.on||cam.st!=='scan')return;
-  cam.dets=dets;cam.cards=cam.voter.add(dets);camChips();camDraw();
-  if(cam.voter.done()){cam.st='check';v.pause();camDone();return;}
-  camStatus(tr('cam.scan',{n:cam.cards.length}));
-  setTimeout(camLoop,30);
+ camInfer(v,v.videoWidth,v.videoHeight,z,camCrop()).then(function(dets){
+  cam.busy=false;cam.ms=performance.now()-t0;if(!cam.on||cam.frozen||cam.zedit||!cam.stream)return;
+  cam.dets=dets;camVoteAdd(dets,v.videoWidth,v.videoHeight);
+  if(cam.st==='scan'){
+   if(camSettled(false)){camCommit(camVoteGroups(),false);cam.watch=camSet.auto;camNewVote();if(cam.watch)setTimeout(camLoop,250);return;}
+   camStatus(camScanMsg());camBottom();camDraw();setTimeout(camLoop,30);return;}
+  // watch (auto-rescan): refill only when the settled cards differ from what is filled by 2+ locked cards
+  camDraw();
+  if(camSettled(true)){var G=camVoteGroups(),cur=camHeld(),nw=0;G.forEach(function(g){g.cards.forEach(function(c){if(!c.likely&&cur.indexOf(c.c)<0)nw++;});});
+   if(nw>=2)camCommit(G,false);camNewVote();}
+  else if(cam.V[0].F>=CAMV.give+2)camNewVote(); // short windows so a new hand outvotes the old one quickly
+  setTimeout(camLoop,120);
  }).catch(function(e){cam.busy=false;camErr(tr('cam.err.model'));});
 }
-function camInfer(src,w,h,z){
- var cx=$('camW').getContext('2d',{willReadFrequently:true}),m=camPrep(cx,src,w,h,z);
+function camVoteAdd(dets,sw,sh){
+ if(!camZones.length){cam.V[0].add(dets);return;}
+ var Z=camZones.map(function(){return [];});dets.forEach(function(d){var i=camZoneOf(d,sw,sh);if(i>=0&&Z[i])Z[i].push(d);});
+ cam.V.forEach(function(v,i){v.add(Z[i]||[]);});}
+// settled: every vote that has seen something has stalled (or, in watch mode, fully locked)
+function camSettled(strict){var any=false,ok=true;cam.V.forEach(function(v){if(!v.seen())return;any=true;if(strict?!v.done():!v.stall())ok=false;});
+ return any&&ok&&cam.V[0].F>=CAMV.min;}
+function camVoteGroups(){return camZones.length?cam.V.map(function(v,i){return {who:camZones[i].p,zi:i,cards:v.fill()};}):[{who:cam.p,cards:cam.V[0].fill()}];}
+function camHeld(){var a=hands[0].concat(hands[1]);cam.res.forEach(function(g){if(g.who===2)g.cards.forEach(function(c){a.push(c.c);});});return a;}
+function camInfer(src,w,h,z,crop){
+ var cx=$('camW').getContext('2d',{willReadFrequently:true}),m=camPrep(cx,src,w,h,z,crop);
  return cam.sess.run({images:new ort.Tensor('float32',m.data,[1,3,CAM_SZ,CAM_SZ])}).then(function(r){var o=r[Object.keys(r)[0]];return camDecode(o.data,o.dims[2],0.2,m);});
 }
-function camDone(){var u=cam.cards.filter(function(c){return c.unsure;}).length,x=cam.cards.filter(function(c){return camClash(c.c);}).length;
- camStatus(tr('cam.check')+(u?' '+tr('cam.unsure',{n:u}):'')+(x?' '+tr('cam.clash',{n:x}):''),u||x?'warn':'ok');camChips();}
-function camClash(c){return hands[1-cam.p].indexOf(c)>=0;}
-function camChips(){
- var e=$('camC');if(!e)return;var s='';
- for(var i=0;i<5;i++){var c=cam.cards[i];
-  if(c){var cl=camClash(c.c);s+='<button class="cam-chip'+(c.unsure?' unsure':'')+(cl?' clash':'')+'" data-ci="'+i+'" aria-label="'+tr('cam.chip.aria',{card:RANKS[c.c>>2]+SUITS[c.c&3]})+'">'+face(c.c)+(cl?'<em>'+tr('cam.inuse')+'</em>':c.unsure?'<em>?</em>':'')+'</button>';}
-  else s+='<button class="cam-chip empty" data-ci="'+i+'" aria-label="'+tr('cam.slot.aria')+'">'+back()+'</button>';}
- e.innerHTML=s;var u=$('camU');if(u)u.disabled=!cam.cards.length;
+// Fill the hands. G: [{who:0|1|2, zi?, cards:[vote entries]}]. Zones of the same player are merged (best 5 by evidence);
+// the duplicate guard runs across players, "Other" zones and any hand not being filled. Returns the number of cards placed.
+function camCommit(G,still){
+ var by={},order=[];G.forEach(function(g){var k=g.who<2?'p'+g.who:'z'+g.zi;if(!by[k]){by[k]={who:g.who,zi:g.zi,cards:[]};order.push(k);}by[k].cards=by[k].cards.concat(g.cards);});
+ var D=order.map(function(k){var g=by[k];g.cards=g.cards.sort(function(a,b){return (a.likely?0:1e3)+a.ev>(b.likely?0:1e3)+b.ev?-1:1;}).slice(0,CAMV.max);return g;});
+ var fill={};D.forEach(function(g){if(g.who<2&&g.cards.length)fill[g.who]=1;});
+ var taken=[];[0,1].forEach(function(p){if(!fill[p])taken=taken.concat(hands[p]);});
+ var out=camResolve(D,taken),n=0;D.forEach(function(g,i){g.cards=out[i];n+=g.cards.length;});
+ if(!n){cam.res=D;cam.st='done';camStatus(tr(still?'cam.photo.none':'cam.none'),'bad');camBottom();camDraw();return 0;}
+ camSnap();
+ D.forEach(function(g){g.cards.forEach(function(c){cam.altOf[c.c]=c.alts||[];});
+  if(g.who>1||!fill[g.who])return;var p=g.who,ids=g.cards.map(function(c){return c.c;});
+  hands[p].length=0;ids.forEach(function(c){hands[p].push(c);});camLikely[p]=g.cards.filter(function(c){return c.unsure;}).map(function(c){return c.c;});changed(p);});
+ cam.res=D;cam.st='done';cam.pop=null;camBeep();camStatus(camDoneMsg(),camDoneCls());camBottom();camDraw();return n;}
+function camShown(){if(cam.st!=='done'&&cam.st!=='photo'&&cam.res.length===0)return null;
+ var G=camZones.length?[]:[{who:cam.p}],seen={};
+ if(camZones.length){camZones.forEach(function(z,i){if(z.p<2){if(!seen[z.p]){seen[z.p]=1;G.push({who:z.p});}}else G.push({who:2,zi:i});});G.sort(function(a,b){return a.who-b.who;});}
+ return G.map(function(g){if(g.who<2)return {who:g.who,cards:hands[g.who].map(function(c){return {c:c,unsure:camLikely[g.who].indexOf(c)>=0};})};
+  var r=cam.res.filter(function(x){return x.zi===g.zi;})[0];return {who:2,zi:g.zi,cards:r?r.cards:[]};});}
+function camDoneMsg(){var S=camShown()||[],u=0,miss=0,who=[];
+ S.forEach(function(g){if(g.who>1)return;u+=g.cards.filter(function(c){return c.unsure;}).length;miss+=5-g.cards.length;if(g.cards.length)who.push(tr('player',{n:g.who+1}));});
+ if(!who.length)return tr('cam.none');
+ return tr('cam.filled',{who:who.join(' + ')})+(u?' · '+tr('cam.filled.likely',{n:u}):'')+(miss?' · '+tr('cam.filled.miss',{n:miss}):'');}
+function camDoneCls(){var S=camShown()||[],bad=S.some(function(g){return g.who<2&&(g.cards.length<5||g.cards.some(function(c){return c.unsure;}));});return bad?'warn':'ok';}
+// bottom panel: status, chips (per player / zone), alternatives popover, actions; zone editor panel when editing
+function camBottom(){var b=$('camB');if(!b)return;
+ if(cam.zedit){b.innerHTML=camZPanel();b.className='cam-bot zed';camRelayout();return;}
+ b.className='cam-bot';var s='<div class="cam-stat'+(cam.mcls?' '+cam.mcls:'')+'" id="camS">'+cam.msg+'</div>',S=camShown();
+ if(!S){var L=camVoteGroups();S=L.map(function(g){return {who:g.who,zi:g.zi,cards:g.cards,pre:1};});
+  if(camZones.length){var m={};S=S.filter(function(g){if(g.who<2){if(m[g.who]){m[g.who].cards=m[g.who].cards.concat(g.cards).slice(0,5);return false;}m[g.who]=g;}return true;});}}
+ var multi=S.length>1;
+ S.forEach(function(g,gi){s+='<div class="cam-grp'+(multi?' multi':'')+'">'+(multi?'<span class="cam-gl"'+(g.zi!=null?' style="color:'+CAMZ_COL[camZones[g.zi].col]+'"':'')+'>'+(g.who<2?tr('cam.zone.p',{n:g.who+1}):camZName(g.zi))+'</span>':'')+'<div class="cam-chips">';
+  for(var i=0;i<5;i++){var c=g.cards[i];
+   if(c)s+='<button class="cam-chip'+(c.unsure?' unsure':'')+(g.pre?' pre':'')+'" data-cg="'+gi+'" data-ci="'+i+'" aria-label="'+tr(c.unsure?'cam.likely.aria':'cam.chip.aria',{card:RANKS[c.c>>2]+SUITS[c.c&3]})+'">'+face(c.c)+(c.unsure?'<em>?</em>':'')+'</button>';
+   else s+='<button class="cam-chip empty" data-cg="'+gi+'" data-ci="'+i+'" aria-label="'+tr('cam.slot.aria')+'"'+(g.who>1||g.pre?' disabled':'')+'>'+back()+'</button>';}
+  s+='</div></div>';});
+ cam.shown=S;
+ if(cam.pop)s+=camPopHtml();
+ var live=!!cam.stream&&!cam.still;
+ s+='<div class="cam-acts"><button class="btn" data-cb="undo"'+(camUndoStack.length?'':' disabled')+'>'+tr('cam.undo')+'</button>'+
+  '<button class="btn" data-cb="photo">'+tr('cam.load')+'</button>'+
+  (live?'<button class="btn" data-cb="rescan">'+tr('cam.rescan')+'</button>':'<button class="btn" data-cb="live">'+tr('cam.live')+'</button>')+
+  '<button class="btn orange" data-cb="done">'+tr('cam.done')+'</button></div>';
+ b.innerHTML=s;camRelayout();}
+// the free area for the picture depends on the bottom panel height
+function camRelayout(){var b=$('camB');if(b&&b.offsetHeight!==cam.bh){cam.bh=b.offsetHeight;camApplyView();}}
+function camChips(){camBottom();}
+function camPopHtml(){var g=cam.shown&&cam.shown[cam.pop.g],c=g&&g.cards[cam.pop.i];if(!c)return '';var held=camHeld();
+ var A=(cam.altOf[c.c]||c.alts||[]).filter(function(a){return held.indexOf(a)<0;}).slice(0,3);
+ return '<div class="cam-pop"><div class="cam-pt"><b>'+tr(c.unsure?'cam.pop.likely':'cam.pop.title',{card:rk(c.c)+SYM[c.c&3]})+'</b></div>'+
+  '<div class="cam-alts">'+(A.length?A.map(function(a){return '<button class="cam-chip" data-alt="'+a+'">'+face(a)+'</button>';}).join(''):'<span class="cam-note">'+tr('cam.pop.none')+'</span>')+'</div>'+
+  '<div class="cam-acts sm">'+(c.unsure?'<button class="btn" data-cb="keep">'+tr('cam.pop.keep')+'</button>':'')+'<button class="btn" data-cb="rm">'+tr('cam.pop.rm')+'</button><button class="btn" data-cb="pick">'+tr('cam.pop.pick')+'</button></div></div>';}
+function camBotClick(e){
+ if(cam.zedit){camZClick(e);return;}
+ var t=e.target.closest('[data-cb],[data-ci],[data-alt]');if(!t)return;
+ if(t.dataset.alt!=null){camSetCard(+t.dataset.alt);return;}
+ if(t.dataset.ci!=null){var g=cam.shown[+t.dataset.cg];if(!g||g.pre)return;var i=+t.dataset.ci;
+  if(!g.cards[i]){if(g.who<2){var p=g.who;camClose();openSheet(p,hands[p].length);}return;}
+  if(g.who>1)return;cam.pop=cam.pop&&cam.pop.g===+t.dataset.cg&&cam.pop.i===i?null:{g:+t.dataset.cg,i:i};camBottom();return;}
+ var k=t.dataset.cb;
+ if(k==='undo'){if(camUndo()){cam.pop=null;camStatus(tr('cam.undone'));camBottom();}}
+ else if(k==='photo')camPhotoPick();
+ else if(k==='rescan'){cam.res=[];camRestartVote();}
+ else if(k==='live')camLive();
+ else if(k==='done')camClose();
+ else if(k==='keep'||k==='rm'||k==='pick'){var G=cam.shown[cam.pop.g],q=G.who,c=G.cards[cam.pop.i].c,j=hands[q].indexOf(c);
+  if(k==='keep'){camLikely[q]=camLikely[q].filter(function(x){return x!==c;});}
+  else{camSnap();if(j>=0)hands[q].splice(j,1);camLikely[q]=camLikely[q].filter(function(x){return x!==c;});changed(q);
+   if(k==='pick'){cam.pop=null;camClose();openSheet(q,j<0?hands[q].length:j);return;}}
+  cam.pop=null;camStatus(camDoneMsg(),camDoneCls());camBottom();}
 }
-// live boxes over the video (object-fit: cover mapping)
+// one-tap fix: replace the chip's card with the chosen alternative
+function camSetCard(a){var G=cam.shown[cam.pop.g],q=G.who,c=G.cards[cam.pop.i].c,j=hands[q].indexOf(c);if(j<0)return;
+ camSnap();hands[q][j]=a;camLikely[q]=camLikely[q].filter(function(x){return x!==c;});cam.altOf[a]=[c].concat((cam.altOf[c]||[]).filter(function(x){return x!==a;}));changed(q);
+ cam.pop=null;camStatus(camDoneMsg(),camDoneCls());camBottom();camDraw();}
+// overlay: zones + detection boxes (green = in a hand / locked, orange = not used)
 function camDraw(){
- var o=$('camO'),S=cam.src;if(!o)return;var W=o.clientWidth,H=o.clientHeight,dp=window.devicePixelRatio||1;
+ var o=$('camO');if(!o)return;var W=o.clientWidth,H=o.clientHeight,dp=window.devicePixelRatio||1;
  if(o.width!==W*dp||o.height!==H*dp){o.width=W*dp;o.height=H*dp;}var g=o.getContext('2d');g.setTransform(dp,0,0,dp,0,0);g.clearRect(0,0,W,H);
- var sw=S&&(S.videoWidth||S.naturalWidth),sh=S&&(S.videoHeight||S.naturalHeight);if(!sw||!cam.dets.length)return;
- var s=S.videoWidth?Math.max(W/sw,H/sh):Math.min(W/sw,H/sh),ox=(W-sw*s)/2,oy=(H-sh*s)/2;
+ var m=camMap();if(!m)return;
+ camZonesDraw(g,m);if(cam.zedit)return;
+ var held=camHeld();cam.V.forEach(function(v){v.top.forEach(function(t){held.push(t.c);});});
  g.lineWidth=2;g.font='bold 13px -apple-system,Helvetica,Arial,sans-serif';
- cam.dets.forEach(function(d){var id=camCardId(d.k),L=cam.cards.some(function(c){return c.c===id;});g.strokeStyle=g.fillStyle=L?'#32d74b':'#ff9500';
-  var x=ox+d.x1*s,y=oy+d.y1*s;g.strokeRect(x,y,(d.x2-d.x1)*s,(d.y2-d.y1)*s);g.fillText(rk(id)+SYM[id&3],x,y-3);});
-}
-function camPick(){return cam.cards.map(function(c){return c.c;}).filter(function(c){return !camClash(c);});}
-function camUse(){if(!cam.cards.length)return;var p=cam.p,h=camPick();camClose();hands[p].length=0;h.forEach(function(c){hands[p].push(c);});changed(p);if(h.length<5)openSheet(p,h.length);}
-// tap a chip: keep the other cards, open the normal card picker on that slot to choose the right card
-function camFix(i){var p=cam.p,h=cam.cards.map(function(c){return c.c;}),keep=[];
- h.forEach(function(c,j){if(j!==i&&!camClash(c))keep.push(c);});
- var at=Math.min(i,keep.length);camClose();hands[p].length=0;keep.forEach(function(c){hands[p].push(c);});changed(p);openSheet(p,at);}
-// Fallback: one still photo (also used when the live camera is blocked); 2 zoom levels, top 5 cards by summed confidence.
-function camPhoto(file){
- cam.st='photo';camStop();cam.voter.reset();cam.cards=[];cam.dets=[];camChips();
- var d=$('cam');d.classList.remove('err','live');d.classList.add('still');camStatus(tr('cam.photo.read'));
- var url=URL.createObjectURL(file),im=$('camI');
- im.onload=function(){camLoad().then(function(){
-  var R=[];return camInfer(im,im.naturalWidth,im.naturalHeight,1).then(function(a){R.push(a);return camInfer(im,im.naturalWidth,im.naturalHeight,1/1.6);}).then(function(b){R.push(b);
-   cam.src=im;cam.cards=camStill(R);cam.dets=R[0].filter(function(x){return x.p>=CAMV.seen;});camDraw();
-   if(!cam.cards.length){camStatus(tr('cam.photo.none'),'bad');camChips();return;}
-   cam.st='check';camDone();});
- }).catch(function(){camErr(tr('cam.err.model'));});};
- im.onerror=function(){camStatus(tr('cam.photo.none'),'bad');};
- im.src=url;
+ cam.dets.forEach(function(d){if(d.p<CAMV.seen&&!cam.still)return;var id=camCardId(d.k),L=held.indexOf(id)>=0;g.strokeStyle=g.fillStyle=L?'#32d74b':'#ff9500';
+  var a=camToScreen(m,d.x1,d.y1);g.strokeRect(a[0],a[1],(d.x2-d.x1)*m.k,(d.y2-d.y1)*m.k);g.fillText(rk(id)+SYM[id&3],a[0],a[1]-3);});
 }
 window.addEventListener('pagehide',camStop);
-document.addEventListener('visibilitychange',function(){if(document.hidden&&cam.on)camClose();});
+document.addEventListener('visibilitychange',function(){if(document.hidden&&cam.on&&cam.stream)camClose();});
 
 </script></body></html>
